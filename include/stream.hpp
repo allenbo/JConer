@@ -2,6 +2,9 @@
 #define __JCONER_STREAM_HPP__
 
 #include "token.hpp"
+#include "logging.hpp"
+
+#include <fstream>
 
 namespace JCONER {
 
@@ -13,8 +16,8 @@ enum StreamType {
 class IStream {
     public:
         IStream();
-        virtual Token getNextToken();
-        virtual ~IStream() = 0;
+        virtual Token getNextToken() = 0;
+        virtual ~IStream();
 
     protected:
         enum StreamType _type;
@@ -23,17 +26,25 @@ class IStream {
 
 class FileIStream {
     public:
-        FileIStream(string filename);
+        FileIStream(std::string filename);
         virtual Token getNextToken();
         virtual ~FileIStream();
+    private:
+        std::string _filename;
+        std::ifstream _fin;
+
+    CLASS_MAKE_LOGGER
 };
 
 class BufferIStream {
     public:
-        BufferIStream(string buffer);
+        BufferIStream(std::string buffer);
         BufferIStream(char* buffer, int n);
         virtual Token getNextToken();
         virtual ~BufferIStream();
+
+
+    CLASS_MAKE_LOGGER
 
 };
 

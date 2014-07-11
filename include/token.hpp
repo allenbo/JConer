@@ -24,7 +24,13 @@ enum TokenType {
 
 class Token {
     public:
-        Token(TokenType type, int lineno, int col, string text);
+        Token(TokenType type, int lineno, int col, std::string text)
+            : _type(type), _lineno(lineno), _col(col), _text(text) {}
+    private:
+        TokenType _type;
+        int _lineno;
+        int _col;
+        std::string _text;
 };
 
 

@@ -50,10 +50,10 @@ class JReal : public JValue {
 
 class JString : public JValue {
     public:
-        JString(string value);
-        inline string getValue() { return _value; }
+        JString(std::string value);
+        inline std::string getValue() { return _value; }
     private:
-        string _value;
+        std::string _value;
 };
 
 class JBoolean : public JValue {
@@ -77,11 +77,11 @@ class JArray : public JValue {
 class JObject : public JValue {
     public:
         JObject();
-        JObject(const std::map<string, JValue*>& object);
-        inline std::map<string,, JValue*> getObject() { return _object; }
+        JObject(const std::map<std::string, JValue*>& object);
+        inline std::map<std::string,, JValue*> getObject() { return _object; }
         ~JObject();
     private:
-        std::map<string, JValue*> _object;
+        std::map<std::string, JValue*> _object;
 };
 
 }
