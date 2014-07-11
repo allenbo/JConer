@@ -6,11 +6,11 @@
 namespace JCONER {
 
 
-#define LOG_DEBUG(...) _logger.debug( __FILE__, __LINE__, __VAR_ARGS__)
-#define LOG_INFO(...) _logger.info( __FILE__, __LINE__, __VAR_ARGS__)
-#define LOG_WARN(...) _logger.warn( __FILE__, __LINE__, __VAR_ARGS__)
-#define LOG_ERROR(...) _logger.error( __FILE__, __LINE__, __VAR_ARGS__)
-#define LOG_FATAL(...) _logger.fatal( __FILE__, __LINE__, __VAR_ARGS__)
+#define LOG_DEBUG(...) _logger.debug( __FILE__, __LINE__, __VA_ARGS__)
+#define LOG_INFO(...) _logger.info( __FILE__, __LINE__, __VA_ARGS__)
+#define LOG_WARN(...) _logger.warn( __FILE__, __LINE__, __VA_ARGS__)
+#define LOG_ERROR(...) _logger.error( __FILE__, __LINE__, __VA_ARGS__)
+#define LOG_FATAL(...) _logger.fatal( __FILE__, __LINE__, __VA_ARGS__)
 
 #define CLASS_MAKE_LOGGER \
     private:\
@@ -28,7 +28,7 @@ enum Level {
 class Logger {
     public:
         Logger()
-            : _level(Level.INFO) {}
+            : _level(INFO) {}
 
         Logger(Level level)
             : _level(level) {}

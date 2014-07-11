@@ -2,6 +2,8 @@
 #include <fstream>
 using namespace std;
 
+namespace JCONER {
+
 FileIStream::FileIStream(std::string filename)
     :_filename(filename)
 {
@@ -9,4 +11,6 @@ FileIStream::FileIStream(std::string filename)
     if (_fin) {
         LOG_ERROR("File doen't exist! [%s]", filename.c_str());        
     }
+}
+
 }

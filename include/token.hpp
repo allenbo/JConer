@@ -1,6 +1,8 @@
 #ifndef __JCONER_TOKEN_HPP__
 #define __JCONER_TOKEN_HPP__
 
+#include <string>
+
 namespace JCONER {
 
 enum TokenType {
@@ -19,7 +21,7 @@ enum TokenType {
     TT_TRUE,
     TT_FALSE,
 
-    TT_NULL;
+    TT_NULL
 };
 
 class Token {
