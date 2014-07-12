@@ -77,7 +77,7 @@ void Logger::fatal(const char* filename, int lineno, const char* fmt, ...) {
 void Logger::_log(Level level, const char* fmt, va_list va) {
     if (level < _level) return;
     fprintf(stderr, fmt, va);
-    
+
     if (level == ERROR or level == FATAL) {
         exit(-1);
     }
@@ -86,9 +86,10 @@ void Logger::_log(Level level, const char* fmt, va_list va) {
 void Logger::_log(const char* filename, int line, Level level, const char* fmt, va_list va) {
     if (level < _level) return;
     char fullfmt[512];
-    snprintf(fullfmt, 511, "[%s|%d]%s", filename, line, fmt); 
-    fprintf(stderr, fullfmt, va);
-    
+
+    snprintf(fullfmt, 511, "[%s|%d] %s", filename, line, fmt);
+    vfprintf(stderr, fullfmt, va);
+
     if (level == ERROR or level == FATAL) {
         exit(-1);
     }
