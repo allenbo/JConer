@@ -37,8 +37,8 @@ class FileIStream {
 
         int _getNextChar();
         void _ungetChar();
-        void _stripWhitespace();
-        void _readBuffer();
+        bool _stripWhitespace();
+        int _readBuffer();
 
         std::string _filename;
         std::ifstream _fin;

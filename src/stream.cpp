@@ -8,8 +8,8 @@ FileIStream::FileIStream(std::string filename)
     :_filename(filename)
 {
     _fin.open(_filename.c_str());
-    if (_fin) {
-        LOG_ERROR("File doen't exist! [%s]", filename.c_str());        
+    if (!_fin) {
+        LOG_ERROR("File doen't exist! [%s]\n", _filename.c_str());        
     }
     _lineno = 0;
     _col = 0;
@@ -29,12 +29,16 @@ FileIStream::~FileIStream() {
     free(_buff);
 }
 
-void FileIStream::_readBuffer() {
+int FileIStream::_readBuffer() {
     int remaining_length = _getRemainingLength();
-    int length = BUFSIZE - 1 > remaining_length ? BUFSIZE : remaining_length + 1;
+    if (remaining_length == 0) {
+        return EOF;
+    }
+    int length = BUFSIZE > remaining_length ? remaining_length : BUFSIZE;
     _fin.read(_buff, length);
     _cur = _buff;
     _end = _buff + length;
+    return 0;
 }
 
 inline int FileIStream::_getLength() {
@@ -56,7 +60,10 @@ inline int FileIStream::_getRemainingLength() {
 
 inline int FileIStream::_getNextChar() {
     if (_cur == _end) {
-        _readBuffer();
+        int rst = _readBuffer();
+        if (rst == EOF) {
+            return EOF;
+        }
     }
     return *_cur ++;
 }
@@ -66,7 +73,7 @@ inline void FileIStream::_ungetChar() {
     _cur --;
 }
 
-void FileIStream::_stripWhitespace() {
+bool FileIStream::_stripWhitespace() {
     while(true) {
         int c = _getNextChar();
         if (isspace(c)) {
@@ -77,13 +84,16 @@ void FileIStream::_stripWhitespace() {
                 _col ++;
             }
         } else {
-            return;
+            if (c == EOF) return true;
+            _ungetChar();
+            return false;
         }
     }
 }
 
 Token FileIStream::getNextToken() {
-    _stripWhitespace();
+    bool iseof = _stripWhitespace();
+    if (iseof) { return Token(TT_END);}
     int c = _getNextChar();
     TokenType type;
 
@@ -93,7 +103,7 @@ Token FileIStream::getNextToken() {
         _col ++;
         return t;
     }
-    
+
     if (c == '"') {
         VarString vs;
         while(true) { 
@@ -143,7 +153,7 @@ Token FileIStream::getNextToken() {
             }
         }
     }
-    
+
     if (c == '-' || isdigit(c)) {
         VarString vs;
         int nextc = 0;
@@ -201,24 +211,24 @@ exp:
                     vs.append((char)c);
                     nextc = _getNextChar(); 
                     if (nextc == '+' || nextc == '-') {
-                        vs.append((char)c);
+                        vs.append((char)nextc);
                     } else if (isdigit(nextc)) {
                         vs.append((char)nextc);
-                        while(true) {
-                            c = _getNextChar();
-                            if (isdigit(c)) {
-                                vs.append((char)c);
-                            } else {
-                                break;
-                            }
-                        }
-                        _ungetChar();
-                        Token t(TT_REAL, _lineno, _col, vs.toString());
-                        _col += vs.size();
-                        return t;
                     } else {
                         LOG_ERROR("Unfinished exp!");
                     }
+                    while(true) {
+                        c = _getNextChar();
+                        if (isdigit(c)) {
+                            vs.append((char)c);
+                        } else {
+                            break;
+                        }
+                    }
+                    _ungetChar();
+                    Token t(TT_REAL, _lineno, _col, vs.toString());
+                    _col += vs.size();
+                    return t;
                 } else {
                     _ungetChar();
                     Token t(TT_INTEGER, _lineno, _col, vs.toString());
@@ -226,9 +236,11 @@ exp:
                     return t;
                 }
             }
-        } else if (c == '.') {
+        } else if (nextc == '.') {
+            c = nextc;
             goto frac;
-        } else if (c == 'e' || c == 'E') {
+        } else if (nextc == 'e' || nextc == 'E') {
+            c = nextc;
             goto exp;
         } else {
             _ungetChar();
@@ -243,12 +255,12 @@ exp:
         VarString vs;
         vs.append(c);
         for(int i = 0; i < 3; i ++ ) {
-           c = _getNextChar();
-           if (c == EOF) {
-               LOG_ERROR("End of File");
-           } else {
-               vs.append((char)c);
-           }
+            c = _getNextChar();
+            if (c == EOF) {
+                LOG_ERROR("End of File");
+            } else {
+                vs.append((char)c);
+            }
         }
 
         if (strncmp(vs.toString().c_str(), "true", 4) == 0) {
