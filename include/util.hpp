@@ -10,47 +10,54 @@
 namespace JCONER {
 
 #define BUFSIZE 1024
-#define MALLOC(ptr, size) do {\
-    if (((ptr) = malloc(size)) == NULL) {\
+#define MALLOC(type, ptr, size) do {\
+    if (((ptr) = (type*)malloc(size)) == NULL) {\
         fprintf(stderr, "Run out of memory at %s, %d\n", __FILE__, __LINE__);\
         exit(-1);\
-    } while(0)
+    }\
+} while(0)
 
-#define REALLOC(ptr, size)  do {\
-    if (((ptr) = realloc(size)) == NULL) {\
+#define REALLOC(type, ptr, size)  do {\
+    if (((ptr) = (type*)realloc(ptr, size)) == NULL) {\
         fprintf(stderr, "Run out of memory at %s, %d\n", __FILE__, __LINE__);\
         exit(-1);\
-    } while(0)
+    }\
+} while(0)
 
 class VarString {
     public:
         VarString() {
-            MALLOC(_p, BUFSIZE);
+            MALLOC(char, _p, BUFSIZE);
             _cur = _p;
             _capacity = BUFSIZE;
         }
         
         inline void append(char c) {
             if (_cur - _p == _capacity - 1) {
-                REALLOC(_p, _capacity * 2);
+                REALLOC(char, _p, _capacity * 2);
                 _cur = _p + _capacity - 1;
                 _capacity *= 2;
             }
 
-            *_cur = c;
+            *_cur++ = c;
         }
 
-        inline void append(char* p, int n) {
+        void append(const char* p) {
+            int len = strlen(p);
+            append(p, len);
+        }
+
+        void append(const char* p, int n) {
             if (_cur - _p + n > _capacity - 1) {
                 int cur_size = _cur - _p;
                 int new_length = 0;
                 if (_cur - _p + n < _capacity * 2 - 1) {
                     new_length = _capacity * 2; 
                 } else {
-                    new_lenght = cur_size + n + BUFSIZE;
+                    new_length = cur_size + n + BUFSIZE;
                 }
 
-                REALLOC(_p, new_length);
+                REALLOC(char, _p, new_length);
                 _cur = _p + cur_size;
                 _capacity = new_length;
             }
@@ -59,7 +66,7 @@ class VarString {
         }
 
         inline std::string toString() {
-            string s(_p, _cur - _p);
+            std::string s(_p, _cur - _p);
             return s;
         }
 
@@ -72,8 +79,8 @@ class VarString {
         char* _p;
         char* _cur;
         int _capacity;
-        VarString(const VarString&) = 0;
-        VarString operator=(const VarString&) = 0;
+        VarString(const VarString&);
+        VarString operator=(const VarString&);
 };
 
 }

@@ -18,11 +18,15 @@ FileIStream::FileIStream(std::string filename)
 
     _file_length = -1;
 
-    if ((_buff = malloc(BUFSIZE) ) == NULL) {
+    if ((_buff = (char*) malloc(BUFSIZE) ) == NULL) {
         LOG_FATAL("Run out of memory");
     }
     _end = _cur = _buff;
     _readBuffer();
+}
+
+FileIStream::~FileIStream() {
+    free(_buff);
 }
 
 void FileIStream::_readBuffer() {
@@ -41,7 +45,7 @@ inline int FileIStream::_getLength() {
     _fin.seekg(0, ios::end);
     _file_length = _fin.tellg();
 
-    _fin.seekg(_cur_pos, iso::beg);
+    _fin.seekg(_cur_pos, ios::beg);
     return _file_length;
 }
 
@@ -57,7 +61,7 @@ inline int FileIStream::_getNextChar() {
     return *_cur ++;
 }
 
-inline int FileIStream::_ungetChar() {
+inline void FileIStream::_ungetChar() {
     if (_cur == _buff) return;
     _cur --;
 }
@@ -132,7 +136,7 @@ Token FileIStream::getNextToken() {
             else if (c == '"') {
                 Token t(TT_STRING, _lineno, _col, vs.toString());
                 _col += vs.size();
-                LOG_DEUG("Get a new string token[%s]\n", t.toString().c_str());
+                LOG_DEBUG("Get a new string token[%s]\n", t.toString().c_str());
                 return t;
             } else {
                 vs.append((char)c);
@@ -188,7 +192,7 @@ frac:
                         goto exp;
                     } else {
                         _ungetChar();
-                        Token t(TT_REAL, _line, _col, vs.toString()); 
+                        Token t(TT_REAL, _lineno, _col, vs.toString()); 
                         _col += vs.size();
                         return t;
                     }
@@ -243,19 +247,19 @@ exp:
            if (c == EOF) {
                LOG_ERROR("End of File");
            } else {
-               va.append((char)c);
+               vs.append((char)c);
            }
         }
 
-        if (strncmp(va.toString().c_str(), "true", 4) == 0) {
+        if (strncmp(vs.toString().c_str(), "true", 4) == 0) {
             Token t(TT_TRUE, _lineno, _col, vs.toString());
             _col += vs.size();
             return t;
-        } else if (strncmp(va.toString().c_str(), "null", 4) == 0) {
+        } else if (strncmp(vs.toString().c_str(), "null", 4) == 0) {
             Token t(TT_NULL, _lineno, _col, vs.toString());
             _col += vs.size();
             return t;
-        } else if (strncmp(va.toString().c_str(), "false", 4) == 0) {
+        } else if (strncmp(vs.toString().c_str(), "false", 4) == 0) {
             c = _getNextChar();
             if (c == 'e') {
                 vs.append((char)c);
@@ -266,9 +270,8 @@ exp:
                 LOG_ERROR("Unknown token");
             }
         }
-    } else { // invalid
-        return Token(TT_INVALID, _lineno, _col, "");
     }
+    return Token(TT_INVALID, _lineno, _col, "");
 }
 
 }

@@ -22,13 +22,15 @@ enum TokenType {
     TT_FALSE,
     TT_NULL,
 
-    TT_INVALIAD
+    TT_INVALID
 };
 
 class Token {
     public:
         Token(TokenType type, int lineno, int col, std::string text)
             : _type(type), _lineno(lineno), _col(col), _text(text) {}
+        Token(TokenType type, int lineno, int col, char c)
+            : _type(type), _lineno(lineno), _col(col), _text(1, c) {}
  
         static TokenType getTokenOne(char c);
         std::string toString();
