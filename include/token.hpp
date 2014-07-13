@@ -31,6 +31,7 @@ class Token {
             : _type(type), _lineno(lineno), _col(col), _text(text) {}
  
         static TokenType getTokenOne(char c);
+        std::string toString();
     private:
         TokenType _type;
         int _lineno;

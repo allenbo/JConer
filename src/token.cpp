@@ -21,7 +21,8 @@ TokenType Token::getTokenOne(char c) {
     }
 }
 
-TokenType Token::getTokenConstant(char* p) {
+std::string Token::toString() {
+    return _text;
 }
-    
+ 
 }

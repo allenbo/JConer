@@ -36,14 +36,15 @@ class FileIStream {
         int _getRemainingLength();
 
         int _getNextChar();
+        void _ungetChar();
         void _stripWhitespace();
         void _readBuffer();
+
         std::string _filename;
         std::ifstream _fin;
         int _lineno;
         int _col;
         char* _buff;
-        char* _start;
         char* _end;
         char* _cur;
         int _cur_pos;
@@ -51,7 +52,7 @@ class FileIStream {
 
     CLASS_MAKE_LOGGER
 };
-
+/*
 class BufferIStream {
     public:
         BufferIStream(std::string buffer);
@@ -63,6 +64,6 @@ class BufferIStream {
     CLASS_MAKE_LOGGER
 
 };
-
+*/
 }
 #endif

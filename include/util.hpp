@@ -27,32 +27,32 @@ class VarString {
         VarString() {
             MALLOC(_p, BUFSIZE);
             _cur = _p;
-            _size = BUFSIZE;
+            _capacity = BUFSIZE;
         }
         
         inline void append(char c) {
-            if (_cur - _p == _size - 1) {
-                REALLOC(_p, _size * 2);
-                _cur = _p + _size - 1;
-                _size *= 2;
+            if (_cur - _p == _capacity - 1) {
+                REALLOC(_p, _capacity * 2);
+                _cur = _p + _capacity - 1;
+                _capacity *= 2;
             }
 
             *_cur = c;
         }
 
         inline void append(char* p, int n) {
-            if (_cur - _p + n > _size - 1) {
+            if (_cur - _p + n > _capacity - 1) {
                 int cur_size = _cur - _p;
                 int new_length = 0;
-                if (_cur - _p + n < _size * 2 - 1) {
-                    new_length = _size * 2; 
+                if (_cur - _p + n < _capacity * 2 - 1) {
+                    new_length = _capacity * 2; 
                 } else {
                     new_lenght = cur_size + n + BUFSIZE;
                 }
 
                 REALLOC(_p, new_length);
                 _cur = _p + cur_size;
-                _size = new_length;
+                _capacity = new_length;
             }
             memcpy(_cur, p, n); 
             _cur += n;
@@ -63,13 +63,15 @@ class VarString {
             return s;
         }
 
+        inline int size() const { return _cur - _p; }
+
         ~VarString() {
             free(_p);
         }
     private:
         char* _p;
         char* _cur;
-        int _size;
+        int _capacity;
         VarString(const VarString&) = 0;
         VarString operator=(const VarString&) = 0;
 };
