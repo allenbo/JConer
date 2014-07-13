@@ -3,8 +3,10 @@
 
 #include "token.hpp"
 #include "logging.hpp"
+#include "util.hpp"
 
 #include <fstream>
+
 
 namespace JCONER {
 
@@ -30,8 +32,22 @@ class FileIStream {
         virtual Token getNextToken();
         virtual ~FileIStream();
     private:
+        int _getLength();
+        int _getRemainingLength();
+
+        int _getNextChar();
+        void _stripWhitespace();
+        void _readBuffer();
         std::string _filename;
         std::ifstream _fin;
+        int _lineno;
+        int _col;
+        char* _buff;
+        char* _start;
+        char* _end;
+        char* _cur;
+        int _cur_pos;
+        int _file_length;
 
     CLASS_MAKE_LOGGER
 };

@@ -20,14 +20,17 @@ enum TokenType {
 
     TT_TRUE,
     TT_FALSE,
+    TT_NULL,
 
-    TT_NULL
+    TT_INVALIAD
 };
 
 class Token {
     public:
         Token(TokenType type, int lineno, int col, std::string text)
             : _type(type), _lineno(lineno), _col(col), _text(text) {}
+ 
+        static TokenType getTokenOne(char c);
     private:
         TokenType _type;
         int _lineno;
