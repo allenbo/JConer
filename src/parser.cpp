@@ -7,12 +7,12 @@
 namespace JCONER {
 
 Parser::Parser()
-    :_instream(NULL)
+    :_instream(NULL), _cur_token(TT_END)
 {
 }
 
 Parser::Parser(IStream& instream)
-    :_instream(&instream)
+    :_instream(&instream), _cur_token(TT_END)
 {
 }
 
@@ -21,7 +21,7 @@ JValue* Parser::parse() {
     return _parseValue();
 }
 
-JValue* parse(IStream& instream) {
+JValue* Parser::parse(IStream& instream) {
     _instream = &instream;
     _getNextToken();
     return _parseValue();
@@ -49,7 +49,7 @@ JValue* Parser::_parseValue() {
         case TT_NULL:
             return _parseNull();
         case TT_ARRAY_OPEN_BRACE:
-            return _paseArray();
+            return _parseArray();
         case TT_OBJECT_OPEN_BRACE:
             return _parseObject();
         default:
@@ -100,7 +100,7 @@ JValue* Parser::_parseArray() {
 
     while(true) {
         elt = _parseValue();
-        rst.append(elt);
+        ((JArray*)rst)->append(elt);
         _getNextToken();
         switch(_cur_token.type()) {
             case TT_COMMA:
@@ -137,7 +137,7 @@ JValue* Parser::_parseObject() {
         }
 
         value = _parseValue();
-        rst.put(key, value);
+        ((JObject*)rst)->put(key, value);
 
         _getNextToken();
         switch(_cur_token.type()) {

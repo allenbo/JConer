@@ -11,16 +11,17 @@ namespace JCONER {
 class Parser {
     CLASS_MAKE_LOGGER
     public:
-        Parse();
+        Parser();
         Parser(IStream& instream);
         
         JValue* parse();
         JValue* parse(IStream& instream);
-    privite:
+    private:
         IStream* _instream;
         Token _cur_token;
-        
+ 
         void _getNextToken();
+        JValue* _parseValue();
         JValue* _parseInt();
         JValue* _parseString();
         JValue* _parseReal();

@@ -1,6 +1,9 @@
 #ifndef __JCONER_JSON_HPP__
 #define __JCONER_JSON_HPP__
 
+#include <string>
+#include <map>
+#include <vector>
 
 namespace JCONER {
 
@@ -13,15 +16,26 @@ enum ValueType {
     VT_INTEGER,
     VT_STRING,
     VT_REAL,
-    VT_BOOLEAN,
-    VT_NULL;
+    VT_TRUE,
+    VT_FALSE,
+    VT_NULL
 };
 
 class JValue {
     public:
-        Value(ValueType type);
+        JValue(ValueType type);
         inline ValueType getType() { return _type; }
-        virtual ~Value();
+        virtual ~JValue();
+
+        static inline bool isString(JValue* value) { return value->_type == VT_STRING;}
+        static inline bool isInteger(JValue* value) { return value->_type == VT_INTEGER;}
+        static inline bool isReal(JValue* value) { return value->_type == VT_REAL;}
+        static inline bool isTrue(JValue* value) { return value->_type == VT_TRUE;}
+        static inline bool isFalse(JValue* value) { return value->_type == VT_FALSE;}
+        static inline bool isNull(JValue* value) { return value->_type == VT_NULL;}
+        static inline bool isObject(JValue* value) { return value->_type == VT_OBJECT;}
+        static inline bool isArray(JValue* value) { return value->_type == VT_ARRAY;}
+
     protected:
         ValueType _type;
 };
@@ -29,7 +43,7 @@ class JValue {
 class JNull : public  JValue {
     public:
         JNull();
-        inline NULL_TYPE getType() { return NULL_VALUE; }
+        inline NULL_TYPE getValue() { return NULL_VALUE; }
 };
 
 class JInt : public JValue {
@@ -79,7 +93,7 @@ class JArray : public JValue {
         inline std::vector<JValue*> getArray() { return _array; }
         ~JArray();
     private:
-        std::vetor<JValue*> _array;
+        std::vector<JValue*> _array;
 };
 
 class JObject : public JValue {
@@ -87,7 +101,7 @@ class JObject : public JValue {
         JObject();
         JObject(const std::map<std::string, JValue*>& object);
         void put(std::string, JValue*); 
-        inline std::map<std::string,, JValue*> getObject() { return _object; }
+        inline std::map<std::string, JValue*> getObject() { return _object; }
         ~JObject();
     private:
         std::map<std::string, JValue*> _object;
