@@ -56,10 +56,17 @@ class JString : public JValue {
         std::string _value;
 };
 
-class JBoolean : public JValue {
+class JTrue : public JValue {
     public:
-        JBoolean(bool value);
-        inline bool getValue() { return _value; }
+        JTrue();
+        inline bool getValue() { return true; }
+    private:
+};
+
+class JFalse : public JValue {
+    public:
+        JFalse();
+        inline bool getValue() { return true; }
     private:
         bool _value;
 };
@@ -68,6 +75,7 @@ class JArray : public JValue {
     public:
         JArray();
         JArray(const std::vector<JValue*>& array);
+        void append(JValue* element);
         inline std::vector<JValue*> getArray() { return _array; }
         ~JArray();
     private:
@@ -78,6 +86,7 @@ class JObject : public JValue {
     public:
         JObject();
         JObject(const std::map<std::string, JValue*>& object);
+        void put(std::string, JValue*); 
         inline std::map<std::string,, JValue*> getObject() { return _object; }
         ~JObject();
     private:

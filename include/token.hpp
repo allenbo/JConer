@@ -55,6 +55,7 @@ class Token {
         inline TokenType type() const { return _type; }
         static TokenType getTokenOne(char c);
         std::string toString();
+        inline std::string text() const { return _text; }
     private:
         TokenType _type;
         int _lineno;
