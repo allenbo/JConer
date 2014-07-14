@@ -1,0 +1,26 @@
+message := value;
+
+value := array |
+         object |
+         primitive;
+
+array := '[' ']' |
+         '[' values ']';
+
+values := value |
+          value ',' values;
+
+object := '{' '}' |
+          '{' pairs '}';
+
+pairs := pair |
+         pair ',' pairs;
+
+pair := string ':' value;
+
+primitive := string |
+             integer |
+             real |
+             true |
+             false |
+             null;
