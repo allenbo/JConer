@@ -26,6 +26,7 @@ class JValue {
         JValue(ValueType type);
         inline ValueType getType() { return _type; }
         virtual ~JValue();
+        virtual void printout() = 0;
 
         static inline bool isString(JValue* value) { return value->_type == VT_STRING;}
         static inline bool isInteger(JValue* value) { return value->_type == VT_INTEGER;}
@@ -44,12 +45,14 @@ class JNull : public  JValue {
     public:
         JNull();
         inline NULL_TYPE getValue() { return NULL_VALUE; }
+        void printout();
 };
 
 class JInt : public JValue {
     public:
         JInt(long value);
         inline long getValue() { return _value; }
+        void printout();
     private:
         long _value;
 };
@@ -58,6 +61,7 @@ class JReal : public JValue {
     public:
         JReal(double value);
         inline double getValue() { return _value; }
+        void printout();
     private:
         double _value;
 };
@@ -66,6 +70,7 @@ class JString : public JValue {
     public:
         JString(std::string value);
         inline std::string getValue() { return _value; }
+        void printout();
     private:
         std::string _value;
 };
@@ -74,6 +79,7 @@ class JTrue : public JValue {
     public:
         JTrue();
         inline bool getValue() { return true; }
+        void printout();
     private:
 };
 
@@ -81,6 +87,7 @@ class JFalse : public JValue {
     public:
         JFalse();
         inline bool getValue() { return true; }
+        void printout();
     private:
         bool _value;
 };
@@ -91,6 +98,7 @@ class JArray : public JValue {
         JArray(const std::vector<JValue*>& array);
         void append(JValue* element);
         inline std::vector<JValue*> getArray() { return _array; }
+        void printout();
         ~JArray();
     private:
         std::vector<JValue*> _array;
@@ -102,6 +110,7 @@ class JObject : public JValue {
         JObject(const std::map<std::string, JValue*>& object);
         void put(std::string, JValue*); 
         inline std::map<std::string, JValue*> getObject() { return _object; }
+        void printout();
         ~JObject();
     private:
         std::map<std::string, JValue*> _object;

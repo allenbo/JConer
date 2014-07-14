@@ -132,10 +132,12 @@ JValue* Parser::_parseObject() {
         }
         key = _cur_token.text();
 
+        _getNextToken();
         if (!_checkTokenType(TT_COLON)) {
             LOG_ERROR("Colon token expected in object!\n");
         }
 
+        _getNextToken();
         value = _parseValue();
         ((JObject*)rst)->put(key, value);
 

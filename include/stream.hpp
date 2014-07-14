@@ -26,7 +26,7 @@ class IStream {
 };
 
 
-class FileIStream {
+class FileIStream : public IStream {
     public:
         FileIStream(std::string filename);
         virtual Token getNextToken();
