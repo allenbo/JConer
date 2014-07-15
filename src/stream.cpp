@@ -105,10 +105,12 @@ Token FileIStream::getNextToken() {
     }
 
     if (c == '"') {
+        int esc_count = 0;
         VarString vs;
         while(true) { 
             c = _getNextChar();
             if (c == '\\') {
+                esc_count ++;
                 int nextc = _getNextChar();
                 switch(nextc) {
                     case '"':
@@ -137,6 +139,7 @@ Token FileIStream::getNextToken() {
                         break;
                     case 'u':
                         vs.append("hex");
+                        esc_count += 4;
                         break;
                     default:
                         LOG_WARN("Wrong escape character");
@@ -145,7 +148,7 @@ Token FileIStream::getNextToken() {
             }
             else if (c == '"') {
                 Token t(TT_STRING, _lineno, _col, vs.toString());
-                _col += vs.size();
+                _col += vs.size() + esc_count + 2/* For " and " */;
                 LOG_DEBUG("Get a new string token[%s]\n", t.toString().c_str());
                 return t;
             } else {

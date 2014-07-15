@@ -10,12 +10,12 @@
 
 namespace JCONER {
 
-void dump(JValue* value, std::ostream& out);
-void dump(JValue* value, std::ostream& out, PrintProperty& property);
+//void dump(JValue* value, std::ostream& out);
+//void dump(JValue* value, std::ostream& out, PrintProperty& property);
 
 JValue* load(std::string filename);
 JValue* load(const char* filename);
-JValue* loads(const char* buffer);
+//JValue* loads(const char* buffer);
 
 }
 #endif

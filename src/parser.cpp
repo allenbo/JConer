@@ -155,7 +155,7 @@ JValue* Parser::_parseObject() {
             case TT_OBJECT_CLOSE_BRACE:
                 return rst;
             default:
-                LOG_ERROR("Unfinished array!\n");
+                LOG_ERROR("Unfinished object!\n");
         }
     }
     return rst;

@@ -10,7 +10,7 @@ JValue* load(std::string filename) {
 
 JValue* load(const char* filename) {
     std::string str_filename(filename);
-    return load(str_fileanme);
+    return load(str_filename);
 }
 
 }

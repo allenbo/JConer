@@ -1,16 +1,16 @@
-#ifndef __JCONER_JSON_HPP__
-#define __JCONER_JSON_HPP__
+#ifndef __JCONER_VALUE_HPP__
+#define __JCONER_VALUE_HPP__
 
 #include <string>
 #include <map>
 #include <vector>
 
 #include "logging.hpp"
+#define NULL_VALUE 0
 
 namespace JCONER {
 
 typedef int NULL_TYPE;
-#define NULL_VALUE 0
 
 enum ValueType {
     VT_OBJECT = 0,
