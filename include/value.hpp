@@ -5,6 +5,8 @@
 #include <map>
 #include <vector>
 
+#include "logging.hpp"
+
 namespace JCONER {
 
 typedef int NULL_TYPE;
@@ -24,18 +26,18 @@ enum ValueType {
 class JValue {
     public:
         JValue(ValueType type);
-        inline ValueType getType() { return _type; }
+        inline ValueType type() { return _type; }
         virtual ~JValue();
         virtual void printout() = 0;
 
-        static inline bool isString(JValue* value) { return value->_type == VT_STRING;}
-        static inline bool isInteger(JValue* value) { return value->_type == VT_INTEGER;}
-        static inline bool isReal(JValue* value) { return value->_type == VT_REAL;}
-        static inline bool isTrue(JValue* value) { return value->_type == VT_TRUE;}
-        static inline bool isFalse(JValue* value) { return value->_type == VT_FALSE;}
-        static inline bool isNull(JValue* value) { return value->_type == VT_NULL;}
-        static inline bool isObject(JValue* value) { return value->_type == VT_OBJECT;}
-        static inline bool isArray(JValue* value) { return value->_type == VT_ARRAY;}
+        static inline bool isString(const JValue* value) { return value->_type == VT_STRING;}
+        static inline bool isInteger(const JValue* value) { return value->_type == VT_INTEGER;}
+        static inline bool isReal(const JValue* value) { return value->_type == VT_REAL;}
+        static inline bool isTrue(const JValue* value) { return value->_type == VT_TRUE;}
+        static inline bool isFalse(const JValue* value) { return value->_type == VT_FALSE;}
+        static inline bool isNull(const JValue* value) { return value->_type == VT_NULL;}
+        static inline bool isObject(const JValue* value) { return value->_type == VT_OBJECT;}
+        static inline bool isArray(const JValue* value) { return value->_type == VT_ARRAY;}
 
     protected:
         ValueType _type;
@@ -50,7 +52,7 @@ class JNull : public  JValue {
 
 class JInt : public JValue {
     public:
-        JInt(long value);
+        JInt(const long value);
         inline long getValue() { return _value; }
         void printout();
     private:
@@ -59,7 +61,7 @@ class JInt : public JValue {
 
 class JReal : public JValue {
     public:
-        JReal(double value);
+        JReal(const double value);
         inline double getValue() { return _value; }
         void printout();
     private:
@@ -68,7 +70,8 @@ class JReal : public JValue {
 
 class JString : public JValue {
     public:
-        JString(std::string value);
+        JString(const std::string value);
+        JString(const char* str);
         inline std::string getValue() { return _value; }
         void printout();
     private:
@@ -93,13 +96,24 @@ class JFalse : public JValue {
 };
 
 class JArray : public JValue {
+    CLASS_MAKE_LOGGER
     public:
         JArray();
         JArray(const std::vector<JValue*>& array);
-        void append(JValue* element);
-        inline std::vector<JValue*> getArray() { return _array; }
-        void printout();
         ~JArray();
+
+        inline std::vector<JValue*> getArray() { return _array; }
+        inline int size() { return _array.size(); }
+        void printout();
+
+        void append(JValue* element);
+        void append(const long value);
+        void append(const int value);
+        void append(const std::string value);
+        void append(const char* str);
+        void append(const bool value);
+        void append(const double value);
+        void appendNull();
     private:
         std::vector<JValue*> _array;
 };
@@ -108,10 +122,20 @@ class JObject : public JValue {
     public:
         JObject();
         JObject(const std::map<std::string, JValue*>& object);
-        void put(std::string, JValue*); 
-        inline std::map<std::string, JValue*> getObject() { return _object; }
-        void printout();
         ~JObject();
+
+        inline std::map<std::string, JValue*> getObject() { return _object; }
+        inline int size() { return _object.size(); }
+        void printout();
+
+        void put(const std::string, JValue*); 
+        void put(const std::string, const long);
+        void put(const std::string, const int);
+        void put(const std::string, const std::string);
+        void put(const std::string, const char*);
+        void put(const std::string, const bool);
+        void put(const std::string, const double);
+        void put(const std::string);
     private:
         std::map<std::string, JValue*> _object;
 };

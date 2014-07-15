@@ -17,9 +17,9 @@ enum StreamType {
 
 class IStream {
     public:
-        IStream();
+        IStream() {};
         virtual Token getNextToken() = 0;
-        virtual ~IStream();
+        virtual ~IStream() {};
 
     protected:
         enum StreamType _type;

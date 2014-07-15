@@ -27,6 +27,12 @@ JValue* Parser::parse(IStream& instream) {
     return _parseValue();
 }
 
+JValue* Parser::parseFromFile(std::string filename) {
+    FileIStream fin(filename);
+    _instream = &fin;
+    return parse();
+}
+
 void Parser::_getNextToken() {
     if (_instream == NULL) {
         LOG_FATAL("There is no stream\n");

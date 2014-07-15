@@ -16,6 +16,7 @@ class Parser {
         
         JValue* parse();
         JValue* parse(IStream& instream);
+        JValue* parseFromFile(std::string filename);
     private:
         IStream* _instream;
         Token _cur_token;
