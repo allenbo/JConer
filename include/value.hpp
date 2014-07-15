@@ -23,6 +23,12 @@ enum ValueType {
     VT_NULL
 };
 
+enum InsertError {
+    IE_SUC = 0,
+    IE_SELF,
+    IE_NULL
+};
+
 class JValue {
     public:
         JValue(ValueType type);
@@ -105,8 +111,14 @@ class JArray : public JValue {
         inline std::vector<JValue*> getArray() { return _array; }
         inline int size() { return _array.size(); }
         void printout();
+        inline JValue* get(int i) {
+            if (i < _array.size())
+                return _array[i];
+            else
+                return NULL;
+        }
 
-        void append(JValue* element);
+        InsertError append(JValue* element);
         void append(const long value);
         void append(const int value);
         void append(const std::string value);
@@ -127,8 +139,24 @@ class JObject : public JValue {
         inline std::map<std::string, JValue*> getObject() { return _object; }
         inline int size() { return _object.size(); }
         void printout();
+        inline JValue* get(std::string key) {
+            if (_object.find(key) != _object.end()) {
+                return _object[key];
+            } else {
+                return NULL;
+            }
+        }
 
-        void put(const std::string, JValue*); 
+        std::vector<std::string> getKeys() {
+            std::vector<std::string> keys;
+            for(std::map<std::string, JValue*>::iterator iter = _object.begin();
+                    iter != _object.end(); iter ++ ) {
+                keys.push_back(iter->first);
+            }
+            return keys;
+        }
+
+        InsertError put(const std::string, JValue*); 
         void put(const std::string, const long);
         void put(const std::string, const int);
         void put(const std::string, const std::string);

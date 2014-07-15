@@ -85,8 +85,11 @@ JArray::JArray(const std::vector<JValue*>& array)
 {
 }
 
-void JArray::append(JValue* element) {
+InsertError JArray::append(JValue* element) {
+    if (element == this) return IE_SELF;
+    if (element == NULL) return IE_NULL;
     _array.push_back(element);
+    return IE_SUC;
 }
 
 void JArray::append(const long value) {
@@ -155,8 +158,11 @@ JObject::JObject(const std::map<std::string, JValue*>& object)
     _object.insert(object.begin(), object.end());
 }
 
-void JObject::put(const std::string key, JValue* value) {
+InsertError JObject::put(const std::string key, JValue* value) {
+    if (value == this) return IE_SELF;
+    if (value == NULL) return IE_NULL;
     _object[key] = value;
+    return IE_SUC;
 }
 
 void JObject::put(const std::string key, const long value) {

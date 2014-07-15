@@ -35,6 +35,10 @@ class Parser {
         inline bool _checkTokenType(TokenType type) const { return _cur_token.type() == type;}
 };
 
+JValue* load(std::string filename);
+JValue* load(const char* filename);
+//JValue* loads(const char* buffer);
+
 }
 
 #endif
