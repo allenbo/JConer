@@ -1,9 +1,9 @@
 #ifndef __JCONER_PARSER_HPP__
 #define __JCONER_PARSER_HPP__
 
+#include "token.hpp"
 #include "value.hpp"
 #include "stream.hpp"
-#include "token.hpp"
 #include "logging.hpp"
 
 namespace JCONER {

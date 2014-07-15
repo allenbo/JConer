@@ -41,6 +41,21 @@ int FileIStream::_readBuffer() {
     return 0;
 }
 
+int FileIStream::_getNChar(char* str, int n) {
+    if (n == 0) return 0;
+
+    int i;
+    int c = 0;
+    for(i = 0; i < n; i ++) {
+        c = _getNextChar();
+        if (c == EOF) {
+            break;
+        }
+        str[i] = (char)c;
+    }
+    return i;
+}
+
 inline int FileIStream::_getLength() {
     if (_file_length != -1)
         return _file_length;
@@ -138,9 +153,51 @@ Token FileIStream::getNextToken() {
                         vs.append('\t');
                         break;
                     case 'u':
-                        vs.append("hex");
+                        {
+                        esc_count ++;
+                        char tmp[4];
+                        if (_getNChar(tmp, 4) != 4) {
+                            LOG_ERROR("Unexpected end of file\n");
+                        }
                         esc_count += 4;
+                        int32_t value = HexCode::decode(tmp);
+
+                        if (value < 0) {
+                            LOG_ERROR("Invalid unicode escape\n");
+                        }
+
+                        if (0xD800 <= value && value <= 0xDBFF) {
+                            c = _getNextChar();
+                            nextc = _getNextChar();
+                            if (c == '\\' && nextc == 'u') {
+                                if (_getNChar(tmp, 4) != 4) {
+                                    LOG_ERROR("Unexpected end of file\n");
+                                }
+
+                                int32_t value2 = HexCode::decode(tmp);
+                                if (0xDC00 <= value2 && value2 <= 0xDFFF) {
+                                    value = ((value - 0xD800) << 10) + (value2 - 0xDC00) + 0x10000;
+                                    esc_count += 6;
+                                } else {
+                                    LOG_ERROR("Invalid unicode \\u%04X\\u%04X\n", value, value2);
+                                }
+                            } else {
+                                _ungetChar();
+                                _ungetChar();
+                                LOG_ERROR("Invalid unicode \\u%04X\n", value);
+                            }
+                        } else if (0xDC00 <= value && value <= 0xDFFF) {
+                            LOG_ERROR("Invalid unicode \\u%04X\n", value);
+                        }
+                        int utf8_size = UTF8::encode(value, tmp, 4);
+                        if (utf8_size < 0) {
+                            LOG_ERROR("Invalide encoding utf8 \\u%04X\n", value);
+                        }
+
+                        esc_count -= utf8_size;
+                        vs.append(tmp, utf8_size);
                         break;
+                        }
                     default:
                         LOG_WARN("Wrong escape character");
 

@@ -39,6 +39,7 @@ class FileIStream : public IStream {
         void _ungetChar();
         bool _stripWhitespace();
         int _readBuffer();
+        int _getNChar(char* str, int n);
 
         std::string _filename;
         std::ifstream _fin;
