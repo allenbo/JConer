@@ -37,7 +37,8 @@ class Parser {
 
 JValue* load(std::string filename);
 JValue* load(const char* filename);
-//JValue* loads(const char* buffer);
+JValue* loads(const char* buffer);
+JValue* loads(std::string buffer);
 
 }
 

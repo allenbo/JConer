@@ -3,6 +3,7 @@
 #include <inttypes.h>
 #include <string.h>
 #include <errno.h>
+#include <sstream>
 
 namespace JCONER {
 
@@ -28,7 +29,8 @@ JValue* Parser::parse(IStream& instream) {
 }
 
 JValue* Parser::parseFromFile(std::string filename) {
-    FileIStream fin(filename);
+    std::ifstream in(filename);
+    IStream fin(in);
     _instream = &fin;
     return parse();
 }
@@ -162,7 +164,8 @@ JValue* Parser::_parseObject() {
 }
 
 JValue* load(std::string filename) {
-    FileIStream fin(filename);
+    std::ifstream in(filename);
+    IStream fin(in);
     Parser parser(fin);
     return parser.parse();
 }
@@ -170,6 +173,18 @@ JValue* load(std::string filename) {
 JValue* load(const char* filename) {
     std::string str_filename(filename);
     return load(str_filename);
+}
+
+JValue* loads(const char* buffer) {
+    std::string str_buffer(buffer);
+    return loads(str_buffer);
+}
+
+JValue* loads(std::string buffer) {
+    std::stringstream ssin(buffer);
+    IStream fin(ssin);
+    Parser parser(fin);
+    return parser.parse();
 }
 
 }

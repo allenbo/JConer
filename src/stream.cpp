@@ -4,19 +4,15 @@ using namespace std;
 
 namespace JCONER {
 
-FileIStream::FileIStream(std::string filename)
-    :_filename(filename)
+IStream::IStream(istream& in)
+    :_fin(in)
 {
-    _fin.open(_filename.c_str());
-    if (!_fin) {
-        LOG_ERROR("File doen't exist! [%s]\n", _filename.c_str());        
-    }
     _lineno = 0;
     _col = 0;
     _end = _buff = NULL;
     _cur_pos = 0;
 
-    _file_length = -1;
+    _content_length = -1;
 
     if ((_buff = (char*) malloc(BUFSIZE) ) == NULL) {
         LOG_FATAL("Run out of memory");
@@ -25,11 +21,11 @@ FileIStream::FileIStream(std::string filename)
     _readBuffer();
 }
 
-FileIStream::~FileIStream() {
+IStream::~IStream() {
     free(_buff);
 }
 
-int FileIStream::_readBuffer() {
+int IStream::_readBuffer() {
     int remaining_length = _getRemainingLength();
     if (remaining_length == 0) {
         return EOF;
@@ -41,7 +37,7 @@ int FileIStream::_readBuffer() {
     return 0;
 }
 
-int FileIStream::_getNChar(char* str, int n) {
+int IStream::_getNChar(char* str, int n) {
     if (n == 0) return 0;
 
     int i;
@@ -56,24 +52,24 @@ int FileIStream::_getNChar(char* str, int n) {
     return i;
 }
 
-inline int FileIStream::_getLength() {
-    if (_file_length != -1)
-        return _file_length;
+inline int IStream::_getLength() {
+    if (_content_length != -1)
+        return _content_length;
 
     _cur_pos = _fin.tellg();
     _fin.seekg(0, ios::end);
-    _file_length = _fin.tellg();
+    _content_length = _fin.tellg();
 
     _fin.seekg(_cur_pos, ios::beg);
-    return _file_length;
+    return _content_length;
 }
 
-inline int FileIStream::_getRemainingLength() {
+inline int IStream::_getRemainingLength() {
     _cur_pos = _fin.tellg();
     return _getLength() - _cur_pos;
 }
 
-inline int FileIStream::_getNextChar() {
+inline int IStream::_getNextChar() {
     if (_cur == _end) {
         int rst = _readBuffer();
         if (rst == EOF) {
@@ -83,12 +79,12 @@ inline int FileIStream::_getNextChar() {
     return *_cur ++;
 }
 
-inline void FileIStream::_ungetChar() {
+inline void IStream::_ungetChar() {
     if (_cur == _buff) return;
     _cur --;
 }
 
-bool FileIStream::_stripWhitespace() {
+bool IStream::_stripWhitespace() {
     while(true) {
         int c = _getNextChar();
         if (isspace(c)) {
@@ -106,7 +102,7 @@ bool FileIStream::_stripWhitespace() {
     }
 }
 
-Token FileIStream::getNextToken() {
+Token IStream::getNextToken() {
     bool iseof = _stripWhitespace();
     if (iseof) { return Token(TT_END);}
     int c = _getNextChar();
