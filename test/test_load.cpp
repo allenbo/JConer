@@ -5,7 +5,7 @@
 using namespace JCONER;
 
 int main(int argc, char** argv) {
-    JValue *rst = loads("[12]");
+    JValue *rst = loads("\"\\u6797\"");
     rst->printout();
     delete rst;
     printf("\n");

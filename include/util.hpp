@@ -149,12 +149,12 @@ class UTF8 {
 
                 if (count == 2) value = u & 0x1F;
                 else if (count == 3) value = u & 0xF;
-                else value = u * 0x7;
+                else value = u & 0x7;
 
                 for (int i = 1; i < count; i ++ ) {
                     u = (unsigned char)p[i];
                     if (u < 0x80 || u > 0xBF) return 0;
-                    value = (value << 5) + (u & 0x3F);
+                    value = (value << 6) + (u & 0x3F);
                 }
 
                 if (value > 0x10FFFF) return 0;
