@@ -5,20 +5,32 @@ A C++ implementation for Json
 
 Examples
 ------
-**Load from file**
+**Load from file and buffer**
 ```
 #include "json.hpp"
 using namespace JCONER;
-JValue* rst = load("myjsonfile");
-delete rst;
+PError err;
+JValue* rst = load("myjsonfile", err);
+if (NULL == rst) {
+  std::cout << err.text;
+} else {
+  delete rst;
+}
+err.clear();
+rst = loads("[128, 256]", err);
+if (NULL != rst) delete rst;
 ```
 
-**dump to file**
+**dump to file and buffer**
 ```
 #include "json.hpp"
 using namespace JCONER;
 JValue* item = any_function_or_operation_that_returns_a_json_value();
 dump(item, std::cout);
+char* buffer;
+dumps(item, &buffer);
+std::cout << buffer << std::endl;
+free(buffer);
 delete item;
 ```
 JCONER VALUES
