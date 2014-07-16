@@ -4,6 +4,7 @@
 #include "token.hpp"
 #include "logging.hpp"
 #include "util.hpp"
+#include "error.hpp"
 
 #include <istream>
 #include <fstream>
@@ -15,6 +16,7 @@ class IStream {
     public:
         IStream(std::istream& _fin);
         virtual Token getNextToken();
+        inline PError error() const { return _err; }
         virtual ~IStream();
     private:
         int _getLength();
@@ -34,6 +36,7 @@ class IStream {
         char* _cur;
         int _cur_pos;
         int _content_length;
+        PError _err;
 
     CLASS_MAKE_LOGGER
 };

@@ -5,6 +5,7 @@
 #include "value.hpp"
 #include "stream.hpp"
 #include "logging.hpp"
+#include "error.hpp"
 
 namespace JCONER {
 
@@ -17,9 +18,11 @@ class Parser {
         JValue* parse();
         JValue* parse(IStream& instream);
         JValue* parseFromFile(std::string filename);
+        inline PError error() const { return _err;}
     private:
         IStream* _instream;
         Token _cur_token;
+        PError _err;
  
         void _getNextToken();
         JValue* _parseValue();
@@ -35,10 +38,10 @@ class Parser {
         inline bool _checkTokenType(TokenType type) const { return _cur_token.type() == type;}
 };
 
-JValue* load(std::string filename);
-JValue* load(const char* filename);
-JValue* loads(const char* buffer);
-JValue* loads(std::string buffer);
+JValue* load(std::string filename, PError& err);
+JValue* load(const char* filename, PError& err);
+JValue* loads(const char* buffer, PError& err);
+JValue* loads(std::string buffer, PError& err);
 
 }
 

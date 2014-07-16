@@ -61,7 +61,7 @@ JValue* Parser::_parseValue() {
         case TT_OBJECT_OPEN_BRACE:
             return _parseObject();
         default:
-            LOG_WARN("INVALID TOKEN[%s]\n", _cur_token.toString().c_str());
+            _err = _instream->error();
             return NULL;
     }
 }
@@ -69,7 +69,8 @@ JValue* Parser::_parseValue() {
 JValue* Parser::_parseInt() {
     long value = strtol(_cur_token.text().c_str(), NULL, 10);
     if (errno == ERANGE) {
-        LOG_WARN("Value out of range[%s]\n", _cur_token.text().c_str());
+        _err.setErrorDetail(_cur_token.lineno(), _cur_token.col(), ET_PARSE_RANGE, "Value ouf of range[%s]\n", _cur_token.text().c_str());
+        return NULL;
     }
     return new JInt(value); 
 }
@@ -81,7 +82,8 @@ JValue* Parser::_parseString() {
 JValue* Parser::_parseReal() {
     double value = strtod(_cur_token.text().c_str(), NULL);
     if (errno == ERANGE) {
-        LOG_WARN("Value out of range[%s]\n", _cur_token.text().c_str());
+        _err.setErrorDetail(_cur_token.lineno(), _cur_token.col(), ET_PARSE_RANGE, "Value ouf of range[%s]\n", _cur_token.text().c_str());
+        return NULL;
     }
     return new JReal(value);
 }
@@ -117,7 +119,12 @@ JValue* Parser::_parseArray() {
             case TT_ARRAY_CLOSE_BRACE:
                 return rst;
             default:
-                LOG_ERROR("Unfinished array!\n");
+                _err.setErrorDetail(_cur_token.lineno(),
+                                    _cur_token.col(),
+                                    ET_PARSE_UNEXPECTED_TOKEN,
+                                    "Unexpected token while parsing array\n",
+                                    _cur_token.text().c_str());
+                return NULL;
         }
     }   
     return rst;
@@ -136,13 +143,13 @@ JValue* Parser::_parseObject() {
 
     while(true) {
         if (!_checkTokenType(TT_STRING) ) {
-            LOG_ERROR("String token expected in object!\n");
+            goto fail;
         }
         key = _cur_token.text();
 
         _getNextToken();
         if (!_checkTokenType(TT_COLON)) {
-            LOG_ERROR("Colon token expected in object!\n");
+            goto fail;
         }
 
         _getNextToken();
@@ -157,34 +164,55 @@ JValue* Parser::_parseObject() {
             case TT_OBJECT_CLOSE_BRACE:
                 return rst;
             default:
-                LOG_ERROR("Unfinished object!\n");
+                goto fail;
         }
     }
     return rst;
+fail:
+    _err.setErrorDetail(_cur_token.lineno(),
+                        _cur_token.col(),
+                        ET_PARSE_UNEXPECTED_TOKEN,
+                        "Unexpected token while parsing object\n",
+                        _cur_token.text().c_str());
+    return NULL;
+
 }
 
-JValue* load(std::string filename) {
+JValue* load(std::string filename, PError& err) {
     std::ifstream in(filename);
+    if (!in.good()) {
+        err.type = ET_IO_FILE_NOT_FOUND;
+        return NULL;
+    }
     IStream fin(in);
     Parser parser(fin);
-    return parser.parse();
+    JValue* rst = parser.parse();
+    if (rst == NULL) {
+        err = parser.error();
+    }
+    in.close();
+    return rst;
 }
 
-JValue* load(const char* filename) {
+JValue* load(const char* filename, PError& err) {
     std::string str_filename(filename);
-    return load(str_filename);
+    return load(str_filename, err);
 }
 
-JValue* loads(const char* buffer) {
+JValue* loads(const char* buffer, PError& err) {
     std::string str_buffer(buffer);
-    return loads(str_buffer);
+    return loads(str_buffer, err);
 }
 
-JValue* loads(std::string buffer) {
+JValue* loads(std::string buffer, PError& err) {
     std::stringstream ssin(buffer);
     IStream fin(ssin);
     Parser parser(fin);
-    return parser.parse();
+    JValue* rst = parser.parse();
+    if (rst == NULL) {
+        err = parser.error();
+    }
+    return rst;
 }
 
 }

@@ -32,6 +32,7 @@ int IStream::_readBuffer() {
     }
     int length = BUFSIZE > remaining_length ? remaining_length : BUFSIZE;
     _fin.read(_buff, length);
+    //TODO Error handling
     _cur = _buff;
     _end = _buff + length;
     return 0;
@@ -75,6 +76,7 @@ inline int IStream::_getNextChar() {
         if (rst == EOF) {
             return EOF;
         }
+        //TODO Error handling
     }
     return *_cur ++;
 }
@@ -103,6 +105,7 @@ bool IStream::_stripWhitespace() {
 }
 
 Token IStream::getNextToken() {
+    _err.clear();
     bool iseof = _stripWhitespace();
     if (iseof) { return Token(TT_END);}
     int c = _getNextChar();
@@ -151,15 +154,18 @@ Token IStream::getNextToken() {
                     case 'u':
                         {
                         esc_count ++;
-                        char tmp[4];
+                        char tmp[5];
                         if (_getNChar(tmp, 4) != 4) {
-                            LOG_ERROR("Unexpected end of file\n");
+                            _err.setErrorDetail(_lineno, _col, ET_PARSE_EOF, "Unexpected end of file\n");
+                            goto fail;
                         }
                         esc_count += 4;
                         int32_t value = HexCode::decode(tmp);
 
                         if (value < 0) {
-                            LOG_ERROR("Invalid unicode escape\n");
+                            tmp[4] = '\0';
+                            _err.setErrorDetail(_lineno, _col, ET_PARSE_INVALID_UNICODE, "Invalid unicode \\u%s\n", tmp) ;
+                            goto fail;
                         }
 
                         if (0xD800 <= value && value <= 0xDBFF) {
@@ -167,7 +173,8 @@ Token IStream::getNextToken() {
                             nextc = _getNextChar();
                             if (c == '\\' && nextc == 'u') {
                                 if (_getNChar(tmp, 4) != 4) {
-                                    LOG_ERROR("Unexpected end of file\n");
+                                    _err.setErrorDetail(_lineno, _col, ET_PARSE_EOF, "Unexpected end of file\n");
+                                    goto fail;
                                 }
 
                                 int32_t value2 = HexCode::decode(tmp);
@@ -175,19 +182,23 @@ Token IStream::getNextToken() {
                                     value = ((value - 0xD800) << 10) + (value2 - 0xDC00) + 0x10000;
                                     esc_count += 6;
                                 } else {
-                                    LOG_ERROR("Invalid unicode \\u%04X\\u%04X\n", value, value2);
+                                    _err.setErrorDetail(_lineno, _col, ET_PARSE_INVALID_UNICODE, "Invalid unicode \\u%04X\\u%04X\n", value, value2);
+                                    goto fail;
                                 }
                             } else {
                                 _ungetChar();
                                 _ungetChar();
-                                LOG_ERROR("Invalid unicode \\u%04X\n", value);
+                                _err.setErrorDetail(_lineno, _col, ET_PARSE_INVALID_UNICODE, "Invalid unicode \\u%04X\n", value);
+                                goto fail;
                             }
                         } else if (0xDC00 <= value && value <= 0xDFFF) {
-                            LOG_ERROR("Invalid unicode \\u%04X\n", value);
+                            _err.setErrorDetail(_lineno, _col, ET_PARSE_INVALID_UNICODE, "Invalid unicode \\u%04X\n", value);
+                            goto fail;
                         }
                         int utf8_size = UTF8::encode(value, tmp, 4);
                         if (utf8_size < 0) {
-                            LOG_ERROR("Invalide encoding utf8 \\u%04X\n", value);
+                            _err.setErrorDetail(_lineno, _col, ET_PARSE_INVALID_UNICODE, "Unicode \\u%04X can't convert to utf8\n", value);
+                            goto fail;
                         }
 
                         esc_count -= utf8_size;
@@ -195,15 +206,17 @@ Token IStream::getNextToken() {
                         break;
                         }
                     default:
-                        LOG_WARN("Wrong escape character");
-
+                        _err.setErrorDetail(_lineno, _col, ET_PARSE_INVALID_CHAR, "Wrong escape char %c\n", (char)c);
+                        goto fail;
                 }
             }
             else if (c == '"') {
                 Token t(TT_STRING, _lineno, _col, vs.toString());
                 _col += vs.size() + esc_count + 2/* For " and " */;
-                LOG_DEBUG("Get a new string token[%s]\n", t.toString().c_str());
                 return t;
+            } else if (c == EOF) {
+                _err.setErrorDetail(_lineno, _col, ET_PARSE_EOF, "Unexpected end of file\n");
+                goto fail;
             } else {
                 vs.append((char)c);
             }
@@ -224,7 +237,8 @@ Token IStream::getNextToken() {
 
         if (isdigit(nextc)) {
             if (c == '0') {
-                LOG_ERROR("NUMBER can't start with 0");
+                _err.setErrorDetail(_lineno, _col, ET_PARSE_INVALID_CHAR, "Number can't start with 0\n");
+                goto fail;
             }
             else {
                 vs.append((char)nextc);
@@ -242,7 +256,8 @@ frac:
                     vs.append((char)c); 
                     nextc = _getNextChar();
                     if (!isdigit(nextc)) {
-                        LOG_ERROR("Unfinished fraction in number");
+                        _err.setErrorDetail(_lineno, _col, ET_PARSE_INVALID_CHAR, "Unfinished fraction in number\n");
+                        goto fail;
                     }
                     vs.append((char)nextc);
                     while(true) {
@@ -268,10 +283,16 @@ exp:
                     nextc = _getNextChar(); 
                     if (nextc == '+' || nextc == '-') {
                         vs.append((char)nextc);
+                        c = _getNextChar();
+                        if (!isdigit(c)) {
+                            _err.setErrorDetail(_lineno, _col, ET_PARSE_INVALID_CHAR, "Unfinished exp in number\n");
+                            goto fail;
+                        }
                     } else if (isdigit(nextc)) {
                         vs.append((char)nextc);
                     } else {
-                        LOG_ERROR("Unfinished exp!");
+                        _err.setErrorDetail(_lineno, _col, ET_PARSE_INVALID_CHAR, "Unfinished exp in number\n");
+                        goto fail;
                     }
                     while(true) {
                         c = _getNextChar();
@@ -313,7 +334,8 @@ exp:
         for(int i = 0; i < 3; i ++ ) {
             c = _getNextChar();
             if (c == EOF) {
-                LOG_ERROR("End of File");
+                _err.setErrorDetail(_lineno, _col, ET_PARSE_EOF, "Unexpected enf of file\n");
+                goto fail;
             } else {
                 vs.append((char)c);
             }
@@ -335,10 +357,12 @@ exp:
                 _col += vs.size();
                 return t;
             } else {
-                LOG_ERROR("Unknown token");
+                _err.setErrorDetail(_lineno, _col, ET_PARSE_INVALID_CHAR, "Unknown token\n");
+                goto fail;
             }
         }
     }
+fail:
     return Token(TT_INVALID, _lineno, _col, "");
 }
 
