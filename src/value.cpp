@@ -1,4 +1,5 @@
 #include "value.hpp"
+#include "util.hpp"
 
 namespace JCONER {
 
@@ -52,6 +53,51 @@ JString::JString(const char* str)
 
 void JString::printout() {
     printf("string[%s]", _value.c_str());
+}
+
+std::string JString::getAsciiValue() {
+    VarString vs;
+    int i = 0;
+    char c;
+    const char* p = _value.c_str();
+    int len = _value.size();
+    while (i < len) {
+        c = p[i];
+        switch(c){
+            case '"': vs.append("\\\""); i ++; break;
+            case '/': vs.append("\\/"); i++; break;
+            case '\\': vs.append("\\\\"); i++; break;
+            case '\t': vs.append("\\t"); i++; break;
+            case '\b': vs.append("\\b"); i++; break;
+            case '\f': vs.append("\\f"); i++; break;
+            case '\n': vs.append("\\n"); i++; break;
+            case '\r': vs.append("\\r"); i++; break;
+            default:{
+                if ((unsigned)c <= 0x80) {
+                    vs.append(c);
+                    i ++;
+                } else {
+                    char buffer[13];
+                    int32_t value;
+                    int count = UTF8::decode(p + i, &value);
+                    i += count;
+                    if (value < 0x10000){
+                       sprintf(buffer, "\\u%04X", value); 
+                       vs.append(buffer, 6);
+                    } else {
+                        int32_t first, second;
+                        value -= 0x10000;
+                        first = 0xD800 | ((value & 0xFFC00) >> 10);
+                        second = 0xDC00 | (value & 0x003FF);
+
+                        sprintf(buffer, "\\u%04X\\u%04X", first, second);
+                        vs.append(buffer, 12);
+                    }
+                }
+            }
+        }
+    }
+    return vs.toString();
 }
 
 // JTrue definition

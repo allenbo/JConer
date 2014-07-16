@@ -79,6 +79,7 @@ class JString : public JValue {
         JString(const std::string value);
         JString(const char* str);
         inline std::string getValue() { return _value; }
+        std::string getAsciiValue();
         void printout();
     private:
         std::string _value;

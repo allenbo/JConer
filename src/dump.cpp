@@ -28,7 +28,7 @@ static void dumpInner(JValue* value, std::ostream& out, int flag, int indent) {
             break;
         case VT_STRING:
             if (ensure_ascii) {
-                out << '"' << ((JString*)value)->getValue() << '"';
+                out << '"' << ((JString*)value)->getAsciiValue() << '"';
             } else {
                 out << '"' << ((JString*)value)->getValue() << '"';
             }
@@ -51,7 +51,7 @@ static void dumpInner(JValue* value, std::ostream& out, int flag, int indent) {
                 }
                 else out << " ";
 
-                out << keys[i] << ": ";
+                out << "\"" << keys[i] << "\": ";
                 dumpInner(ovalue->get(keys[i]), out, flag, indent + DUMP_INDENT);
                 if (i != keys.size() - 1) {
                     out << ",";
