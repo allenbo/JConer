@@ -6,5 +6,6 @@
 #include "stream.hpp"
 #include "parser.hpp"
 #include "dump.hpp"
+#include "error.hpp"
 
 #endif
