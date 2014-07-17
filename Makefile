@@ -7,8 +7,8 @@ TESTBIN_DIR := $(BUILD_DIR)/test
 CPP := g++
 CC := gcc
 
-CFLAG := -O2 -Wall
-LFLAG := -O2 -flto
+CFLAG := -g -Wall
+LFLAG := -g
 
 SRC := $(wildcard $(SRC_DIR)/*.cpp)
 OBJ := $(patsubst %.cpp,%.o, $(subst $(SRC_DIR),$(BUILD_DIR), $(SRC)))

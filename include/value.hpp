@@ -124,6 +124,12 @@ class JArray : public JValue {
         void append(const bool value);
         void append(const double value);
         void appendNull();
+
+        JValue* pop_back() {
+            JValue* rst = _array.back();
+            _array.pop_back();
+            return rst;
+        }
     private:
         std::vector<JValue*> _array;
 };
