@@ -67,3 +67,53 @@ obj_item.put("an_string", string_value);
 obj_item.put("an_null");
 obj_item.put("an_jvalue", other_jvalue_ptr);
 ```
+Serializer
+JConer provides a convenient serializer to convert user-defined object to JArray. Here is how it works.
+```
+#include "json.hpp"
+
+class Helper {
+    public:
+        Helper() {
+            _x = _y = 0;
+        }
+
+        template<class Serializer>
+        JArray* serialize(Serializer& serializer) {
+            serializer & _x;
+            serializer & _y;
+        }
+    private:
+        int _x, _y;
+};
+
+class Test {
+    public:
+        template<class Serializer>
+        JArray* serialize(Serializer& serializer) {
+            serializer & _int_value;
+            serializer & _real_value;
+            serializer & _string_value;
+            serializer & _vector_value;
+            serializer & _primitive_map_value;
+            serializer & _user_defined_map_value;
+        }
+    private:
+        int _int_value;
+        double _real_value;
+        std::string _strin_value;
+        std::vector<int> _vector_value;
+        std::map<std::string, int> _primitive_map_value; //key has to be string
+        std::map<std::string, Help> _user_defined_map_value;
+};
+
+
+int main() {
+    ArraySerializer serializer;
+    Test test;
+    JArray* rst = serializer & test;
+    dump(rst, std::cout, DUMP_PRETTY_PRINT | DUMP_ENSURE_ASCII);
+    delete rst;
+}
+```
+All you have to do is to define a serialize method for every class you want to serilize.
