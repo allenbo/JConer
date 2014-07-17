@@ -90,7 +90,6 @@ class JTrue : public JValue {
         JTrue();
         inline bool getValue() { return true; }
         void printout();
-    private:
 };
 
 class JFalse : public JValue {
@@ -98,8 +97,6 @@ class JFalse : public JValue {
         JFalse();
         inline bool getValue() { return true; }
         void printout();
-    private:
-        bool _value;
 };
 
 class JArray : public JValue {

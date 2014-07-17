@@ -54,5 +54,5 @@ int main() {
     ArraySerializer serializer;
     JValue* arr_item = serializer & t;
     dump(arr_item, std::cout); 
+    delete arr_item;
 }
-

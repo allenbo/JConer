@@ -37,13 +37,13 @@ class Token {
         Token(TokenType type, int lineno, int col, std::string text)
             : _type(type), _lineno(lineno), _col(col), _text(text)
         {
-            _logger.setLevel(DEBUG);
+            //_logger.setLevel(DEBUG);
             LOG_DEBUG("Generate a new token[%s] at [%d|%d]\n", toString().c_str(), _lineno, _col);
         }
         Token(TokenType type, int lineno, int col, char c)
             : _type(type), _lineno(lineno), _col(col), _text(1, c)
         {
-            _logger.setLevel(DEBUG);
+            //_logger.setLevel(DEBUG);
             LOG_DEBUG("Generate a new token[%s] at [%d|%d]\n", toString().c_str(), _lineno, _col);
         }
 
