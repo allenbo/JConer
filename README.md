@@ -68,6 +68,7 @@ obj_item.put("an_null");
 obj_item.put("an_jvalue", other_jvalue_ptr);
 ```
 Serializer
+------
 JConer provides a convenient serializer to convert user-defined object to JArray. Here is how it works.
 ```
 #include "json.hpp"
