@@ -105,7 +105,7 @@ class Test {
         std::string _strin_value;
         std::vector<int> _vector_value;
         std::map<std::string, int> _primitive_map_value; //key has to be string
-        std::map<std::string, Help> _user_defined_map_value;
+        std::map<std::string, Helper> _user_defined_map_value;
 };
 
 
@@ -117,4 +117,4 @@ int main() {
     delete rst;
 }
 ```
-All you have to do is to define a serialize method for every class you want to serilize.
+All you have to do is to define a serialize method for every class you want to serialize.
