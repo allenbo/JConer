@@ -110,7 +110,7 @@ class Test {
 
 
 int main() {
-    ArraySerializer serializer;
+    OutSerializer serializer;
     Test test;
     JArray* rst = serializer & test;
     dump(rst, std::cout, DUMP_PRETTY_PRINT | DUMP_ENSURE_ASCII);

@@ -111,9 +111,12 @@ class Person {
 
 int main() {
     Person t(1, 2);
-    ArraySerializer serializer;
-    JValue* arr_item = serializer & t;
+    OutSerializer sout;
+    JValue* arr_item = sout & t;
     dump(arr_item, std::cout, DUMP_PRETTY_PRINT | DUMP_ENSURE_ASCII);
     std::cout << std::endl;
+    InSerializer sin((JArray*)arr_item);
+    Person another(3, 4);
+    sin & another;
     delete arr_item;
 }
