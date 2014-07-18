@@ -7,5 +7,6 @@
 #include "parser.hpp"
 #include "dump.hpp"
 #include "error.hpp"
+#include "serializer.hpp"
 
 #endif
