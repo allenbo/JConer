@@ -26,10 +26,14 @@ class OutSerializer {
             _array = item;
             value.serialize(*this);
 
-            if (cur_array != NULL)
+            if (cur_array != NULL) {
                 _array = cur_array;
-
-            return _array;
+                return _array;
+            } else {
+                JArray* rst = _array;
+                _array = NULL;
+                return rst;
+            }
         }
 
         template<template<class T, class Allocator> class Container, class ValueType>
@@ -110,6 +114,11 @@ class InSerializer {
 
             _array = cur_array;
             _index = cur_index + 1;
+
+            if(cur_array == NULL) {
+                _array = _instance;
+                _index = 0;
+            }
         }
 
         template<template<class T, class Allocator> class Container, class ValueType>
@@ -139,15 +148,18 @@ class InSerializer {
             JObject * item = (JObject*)(_array->get(_index));
 
             std::vector<std::string> keys = item->getKeys();
-            for(int i = 0; i < keys.size(); i ++ ) {
+            int i;
+            for(i = 0; i < keys.size(); i ++ ) {
+                JValue* value_item = item->get(keys[i]);
+                JArray* tmp_array = new JArray();
+                tmp_array->append(value_item);
+                _array = tmp_array;
+                _index = 0;
                 V tmp;
+                *this & tmp;
                 value[keys[i]] = tmp;
             }
 
-            for(typename std::map<std::string, V>::iterator iter = value.begin();
-                    iter != value.end(); iter ++) {
-                *this & iter->second;
-            }
             _array = cur_array;
             _index = cur_index + 1;
         }
@@ -177,7 +189,7 @@ class InSerializer {
         }
 
         void operator&(double& value) {
-            value = ((JInt*)_array->get(_index))->getValue();
+            value = ((JReal*)_array->get(_index))->getValue();
             _index ++;
         }
     private:

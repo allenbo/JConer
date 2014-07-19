@@ -110,10 +110,14 @@ class Test {
 
 
 int main() {
-    OutSerializer serializer;
+    OutSerializer sout;
     Test test;
-    JArray* rst = serializer & test;
+    JArray* rst = sout & test;
     dump(rst, std::cout, DUMP_PRETTY_PRINT | DUMP_ENSURE_ASCII);
+    Test another_test;
+    InSerializer sin;
+    another_test & sin;
+    assert (another_test == test);
     delete rst;
 }
 ```
