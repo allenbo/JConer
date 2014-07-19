@@ -1,4 +1,4 @@
-#include "logging.hpp"
+#include "jconer/logging.hpp"
 using namespace JCONER;
 
 class Test{

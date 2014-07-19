@@ -1,10 +1,10 @@
 #ifndef __JCONER_DUMP_HPP__
 #define __JCONER_DUMP_HPP__
 
-#include "token.hpp"
-#include "value.hpp"
-#include "stream.hpp"
-#include "parser.hpp"
+#include "jconer/token.hpp"
+#include "jconer/value.hpp"
+#include "jconer/stream.hpp"
+#include "jconer/parser.hpp"
 
 #include <iostream>
 

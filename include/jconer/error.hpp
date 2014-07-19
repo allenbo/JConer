@@ -1,10 +1,10 @@
 #ifndef __JCONER_ERROR_HPP__
 #define __JCONER_ERROR_HPP__
 
+#include "jconer/util.hpp"
 #include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
-#include "util.hpp"
 
 namespace JCONER {
 enum ErrorType {

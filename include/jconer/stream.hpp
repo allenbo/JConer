@@ -1,10 +1,10 @@
 #ifndef __JCONER_STREAM_HPP__
 #define __JCONER_STREAM_HPP__
 
-#include "token.hpp"
-#include "logging.hpp"
-#include "util.hpp"
-#include "error.hpp"
+#include "jconer/token.hpp"
+#include "jconer/logging.hpp"
+#include "jconer/util.hpp"
+#include "jconer/error.hpp"
 
 #include <istream>
 #include <fstream>

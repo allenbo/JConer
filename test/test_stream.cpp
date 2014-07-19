@@ -1,5 +1,4 @@
-#include "stream.hpp"
-#include "token.hpp"
+#include "jconer/json.hpp"
 #include <iostream>
 using namespace JCONER;
 using namespace std;

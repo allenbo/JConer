@@ -1,7 +1,7 @@
 #ifndef __JCONER_OBJECT_HPP__
 #define __JCONER_OBJECT_HPP__
 
-#include "value.hpp"
+#include "jconer/value.hpp"
 #include <map>
 #include <set>
 #include <list>

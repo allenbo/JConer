@@ -1,7 +1,4 @@
-#include "parser.hpp"
-#include "stream.hpp"
-#include "value.hpp"
-
+#include "jconer/json.hpp"
 using namespace JCONER;
 
 int main(int argc, char** argv) {

@@ -2,7 +2,7 @@
 #define __JCONER_TOKEN_HPP__
 
 #include <string>
-#include "logging.hpp"
+#include "jconer/logging.hpp"
 
 namespace JCONER {
 

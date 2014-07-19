@@ -41,4 +41,4 @@ $(TESTBIN_DIR)/%:$(TEST_SRC_DIR)/%.cpp $(OBJ)
 	$(CPP) $^ $(CFLAG) $(LFLAG) -o $@ -I$(INCLUDE_DIR) -L$(BUILD_DIR)
 
 clean:
-	rm -rf $(BUILD_DIR) $(TESTBIN_DIR)
+	rm -rf $(BUILD_DIR) $(TESTBIN_DIR) $(ARCHIVE)

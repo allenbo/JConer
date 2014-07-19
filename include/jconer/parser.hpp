@@ -1,11 +1,11 @@
 #ifndef __JCONER_PARSER_HPP__
 #define __JCONER_PARSER_HPP__
 
-#include "token.hpp"
-#include "value.hpp"
-#include "stream.hpp"
-#include "logging.hpp"
-#include "error.hpp"
+#include "jconer/token.hpp"
+#include "jconer/value.hpp"
+#include "jconer/stream.hpp"
+#include "jconer/logging.hpp"
+#include "jconer/error.hpp"
 
 namespace JCONER {
 

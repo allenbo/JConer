@@ -1,8 +1,5 @@
-#include "parser.hpp"
-#include "stream.hpp"
-#include "value.hpp"
-#include "dump.hpp"
 #include <iostream>
+#include "jconer/json.hpp"
 
 using namespace JCONER;
 
