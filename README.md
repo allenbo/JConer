@@ -7,7 +7,7 @@ Examples
 ------
 **Load from file and buffer**
 ```
-#include "json.hpp"
+#include "jconer/json.hpp"
 using namespace JCONER;
 PError err;
 JValue* rst = load("myjsonfile", err);
@@ -23,7 +23,7 @@ if (NULL != rst) delete rst;
 
 **dump to file and buffer**
 ```
-#include "json.hpp"
+#include "jconer/json.hpp"
 using namespace JCONER;
 JValue* item = any_function_or_operation_that_returns_a_json_value();
 dump(item, std::cout);
@@ -71,7 +71,7 @@ Serializer
 ------
 JConer provides a convenient serializer to convert user-defined object to JArray. Here is how it works.
 ```
-#include "json.hpp"
+#include "jconer/json.hpp"
 
 class Helper {
     public:
