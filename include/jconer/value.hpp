@@ -143,6 +143,14 @@ class JObject : public JValue {
         inline std::map<std::string, JValue*> getObject() { return _object; }
         inline int size() { return _object.size(); }
         void printout();
+        inline bool contain(std::string key) {
+            if (_object.find(key) != _object.end()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
         inline JValue* get(std::string key) {
             if (_object.find(key) != _object.end()) {
                 return _object[key];
