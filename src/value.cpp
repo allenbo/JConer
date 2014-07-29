@@ -218,6 +218,20 @@ JArray::~JArray() {
     }
 }
 
+JValue* JArray::pop(int i) {
+    if (i >= 0 && i < _array.size()) {
+        JValue* rst = _array[i];
+        _array.erase(_array.begin() + i);
+        return rst;
+    }
+    return NULL;
+}
+JValue* JArray::pop_back() {
+    JValue* rst = _array.back();
+    _array.pop_back();
+    return rst;
+}
+
 JValue* JArray::deepcopy() {
     JArray* rst = new JArray();
     for(int i = 0; i < _array.size(); i ++ ) {
@@ -236,6 +250,15 @@ JObject::JObject(const std::map<std::string, JValue*>& object)
     :JValue(VT_OBJECT)
 {
     _object.insert(object.begin(), object.end());
+}
+
+std::vector<std::string> JObject::getKeys() {
+    std::vector<std::string> keys;
+    for(std::map<std::string, JValue*>::iterator iter = _object.begin();
+            iter != _object.end(); iter ++ ) {
+        keys.push_back(iter->first);
+    }
+    return keys;
 }
 
 InsertError JObject::put(const std::string key, JValue* value) {
@@ -293,6 +316,15 @@ JObject::~JObject() {
             iter != _object.end(); iter ++) {
         delete iter->second;
     }
+}
+
+JValue* JObject::pop(std::string key) {
+    if (contain(key)) {
+        JValue* rst = _object[key];
+        _object.erase(key);
+        return rst;
+    }
+    return NULL;
 }
 
 JValue* JObject::deepcopy() {

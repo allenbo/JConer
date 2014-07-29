@@ -117,7 +117,7 @@ class JArray : public JValue {
         inline int size() { return _array.size(); }
         void printout();
         inline JValue* get(int i) {
-            if (i < _array.size())
+            if (i >= 0 && i < _array.size())
                 return _array[i];
             else
                 return NULL;
@@ -132,11 +132,8 @@ class JArray : public JValue {
         void append(const double value);
         void appendNull();
 
-        JValue* pop_back() {
-            JValue* rst = _array.back();
-            _array.pop_back();
-            return rst;
-        }
+        JValue* pop_back();
+        JValue* pop(int i);
         JValue* deepcopy();
     private:
         std::vector<JValue*> _array;
@@ -167,14 +164,7 @@ class JObject : public JValue {
             }
         }
 
-        std::vector<std::string> getKeys() {
-            std::vector<std::string> keys;
-            for(std::map<std::string, JValue*>::iterator iter = _object.begin();
-                    iter != _object.end(); iter ++ ) {
-                keys.push_back(iter->first);
-            }
-            return keys;
-        }
+        std::vector<std::string> getKeys();
 
         InsertError put(const std::string, JValue*); 
         void put(const std::string, const long);
@@ -184,6 +174,7 @@ class JObject : public JValue {
         void put(const std::string, const bool);
         void put(const std::string, const double);
         void put(const std::string);
+        JValue* pop(std::string key);
         JValue* deepcopy();
     private:
         std::map<std::string, JValue*> _object;
