@@ -95,6 +95,7 @@ class Test {
             serializer & _int_value;
             serializer & _real_value;
             serializer & _string_value;
+            serializer & _instance_value;
             serializer & _vector_value;
             serializer & _primitive_map_value;
             serializer & _user_defined_map_value;
@@ -102,7 +103,8 @@ class Test {
     private:
         int _int_value;
         double _real_value;
-        std::string _strin_value;
+        std::string _string_value;
+        Helper _instance_value;
         std::vector<int> _vector_value;
         std::map<std::string, int> _primitive_map_value; //key has to be string
         std::map<std::string, Helper> _user_defined_map_value;
@@ -115,7 +117,7 @@ int main() {
     JArray* rst = sout & test;
     dump(rst, std::cout, DUMP_PRETTY_PRINT | DUMP_ENSURE_ASCII);
     Test another_test;
-    InSerializer sin;
+    InSerializer sin(rst);
     another_test & sin;
     assert (another_test == test);
     delete rst;
