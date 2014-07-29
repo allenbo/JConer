@@ -21,6 +21,11 @@ JNull::JNull()
 void JNull::printout() {
     printf("null");
 }
+
+JValue* JNull::deepcopy() {
+    return new JNull();
+}
+
 // JInt definition
 JInt::JInt(const long value)
     :JValue(VT_INTEGER), _value(value)
@@ -30,6 +35,11 @@ JInt::JInt(const long value)
 void JInt::printout() {
     printf("int[%ld]", _value);
 }
+
+JValue* JInt::deepcopy() {
+    return new JInt(_value);
+}
+
 // JReal definition
 JReal::JReal(const double value)
     :JValue(VT_REAL), _value(value)
@@ -38,6 +48,10 @@ JReal::JReal(const double value)
 
 void JReal::printout() {
     printf("real[%f]", _value);
+}
+
+JValue* JReal::deepcopy() {
+    return new JReal(_value);
 }
 
 // JString definition
@@ -100,6 +114,10 @@ std::string JString::getAsciiValue() {
     return vs.toString();
 }
 
+JValue* JString::deepcopy() {
+    return new JString(_value);
+}
+
 // JTrue definition
 JTrue::JTrue()
     :JValue(VT_TRUE)
@@ -110,6 +128,10 @@ void JTrue::printout() {
     printf("true");
 }
 
+JValue* JTrue::deepcopy()  {
+    return new JTrue();
+}
+
 // JFalse definition
 JFalse::JFalse()
     :JValue(VT_FALSE)
@@ -118,6 +140,10 @@ JFalse::JFalse()
 
 void JFalse::printout() {
     printf("false");
+}
+
+JValue* JFalse::deepcopy()  {
+    return new JFalse();
 }
 
 // JArray definition
@@ -192,6 +218,14 @@ JArray::~JArray() {
     }
 }
 
+JValue* JArray::deepcopy() {
+    JArray* rst = new JArray();
+    for(int i = 0; i < _array.size(); i ++ ) {
+        rst->append(_array[i]->deepcopy());
+    }
+    return rst;
+}
+
 // JObject definition
 JObject::JObject()
     :JValue(VT_OBJECT)
@@ -259,6 +293,15 @@ JObject::~JObject() {
             iter != _object.end(); iter ++) {
         delete iter->second;
     }
+}
+
+JValue* JObject::deepcopy() {
+    JObject* rst = new JObject();
+    for(std::map<std::string, JValue*>::iterator iter = _object.begin();
+            iter != _object.end(); iter ++) {
+        rst->put(iter->first, iter->second->deepcopy());
+    }
+    return rst;
 }
 
 }

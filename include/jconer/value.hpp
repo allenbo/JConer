@@ -34,6 +34,7 @@ class JValue {
         JValue(ValueType type);
         inline ValueType type() { return _type; }
         virtual ~JValue();
+        virtual JValue* deepcopy() = 0;
         virtual void printout() = 0;
 
         static inline bool isString(const JValue* value) { return value->_type == VT_STRING;}
@@ -54,6 +55,7 @@ class JNull : public  JValue {
         JNull();
         inline NULL_TYPE getValue() { return NULL_VALUE; }
         void printout();
+        JValue* deepcopy();
 };
 
 class JInt : public JValue {
@@ -61,6 +63,7 @@ class JInt : public JValue {
         JInt(const long value);
         inline long getValue() { return _value; }
         void printout();
+        JValue* deepcopy();
     private:
         long _value;
 };
@@ -70,6 +73,7 @@ class JReal : public JValue {
         JReal(const double value);
         inline double getValue() { return _value; }
         void printout();
+        JValue* deepcopy();
     private:
         double _value;
 };
@@ -81,6 +85,7 @@ class JString : public JValue {
         inline std::string getValue() { return _value; }
         std::string getAsciiValue();
         void printout();
+        JValue* deepcopy();
     private:
         std::string _value;
 };
@@ -90,6 +95,7 @@ class JTrue : public JValue {
         JTrue();
         inline bool getValue() { return true; }
         void printout();
+        JValue* deepcopy();
 };
 
 class JFalse : public JValue {
@@ -97,6 +103,7 @@ class JFalse : public JValue {
         JFalse();
         inline bool getValue() { return true; }
         void printout();
+        JValue* deepcopy();
 };
 
 class JArray : public JValue {
@@ -130,6 +137,7 @@ class JArray : public JValue {
             _array.pop_back();
             return rst;
         }
+        JValue* deepcopy();
     private:
         std::vector<JValue*> _array;
 };
@@ -176,6 +184,7 @@ class JObject : public JValue {
         void put(const std::string, const bool);
         void put(const std::string, const double);
         void put(const std::string);
+        JValue* deepcopy();
     private:
         std::map<std::string, JValue*> _object;
 };
