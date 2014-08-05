@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 
-#include "jconer/logging.hpp"
+#include "common/logging.hpp"
 #define NULL_VALUE 0
 
 namespace JCONER {

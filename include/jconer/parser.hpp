@@ -4,8 +4,8 @@
 #include "jconer/token.hpp"
 #include "jconer/value.hpp"
 #include "jconer/stream.hpp"
-#include "jconer/logging.hpp"
 #include "jconer/error.hpp"
+#include "common/logging.hpp"
 
 namespace JCONER {
 

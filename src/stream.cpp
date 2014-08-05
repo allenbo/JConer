@@ -1,6 +1,8 @@
 #include "jconer/stream.hpp"
+#include "common/all.hpp"
 #include <fstream>
 using namespace std;
+using namespace COMMON;
 
 namespace JCONER {
 
@@ -15,7 +17,7 @@ IStream::IStream(istream& in)
     _content_length = -1;
 
     if ((_buff = (char*) malloc(BUFSIZE) ) == NULL) {
-        LOG_FATAL("Run out of memory");
+        CLOG_FATAL("Run out of memory");
     }
     _end = _cur = _buff;
     _readBuffer();

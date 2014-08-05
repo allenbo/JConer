@@ -1,5 +1,6 @@
 #include "jconer/util.hpp"
 #include "jconer/dump.hpp"
+#include "common/all.hpp"
 #include <fstream>
 #include <sstream>
 

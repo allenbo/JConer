@@ -2,8 +2,7 @@
 #define __JCONER_STREAM_HPP__
 
 #include "jconer/token.hpp"
-#include "jconer/logging.hpp"
-#include "jconer/util.hpp"
+#include "common/logging.hpp"
 #include "jconer/error.hpp"
 
 #include <istream>

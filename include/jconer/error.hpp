@@ -6,6 +6,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#define BUFSIZE 1024
+
 namespace JCONER {
 enum ErrorType {
     ET_SUC = 0,
