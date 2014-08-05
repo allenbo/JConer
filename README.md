@@ -3,6 +3,17 @@ JConer
 
 A C++ implementation for Json
 
+Setup
+-----
+JConer is using the other repository for some common utility of C++ programming, like logger and string operation.
+```
+git clone git@github.com:allenbo/common.git
+git clone git@github.com:allenbo/JConer.git
+cd JConer
+cp -R ../common/include/common include/
+make
+```
+
 Examples
 ------
 **Load from file and buffer**
