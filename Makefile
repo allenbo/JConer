@@ -8,8 +8,8 @@ CPP := g++
 CC := gcc
 AR := ar
 
-CFLAG := -g -Wall
-LFLAG := -g -flto
+CFLAG := -O2 -Wall
+LFLAG := -O2 -flto
 ARFLAG := -rcs
 
 SRC := $(wildcard $(SRC_DIR)/*.cpp)

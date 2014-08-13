@@ -3,6 +3,7 @@
 #include "common/all.hpp"
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 
 namespace JCONER {
 
@@ -44,7 +45,7 @@ static void dumpInner(JValue* value, std::ostream& out, int flag, int indent) {
             
             out << "{";
             
-            for (int i = 0; i < keys.size(); i ++ ) {
+            for (size_t i = 0; i < keys.size(); i ++ ) {
                 if (pretty_print) {
                     out << std::endl;
                     std::string indent_string(indent, ' ');

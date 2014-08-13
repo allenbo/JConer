@@ -151,7 +151,7 @@ class Person {
 std::ostream& operator<<(std::ostream& out, const Person & t) {
     out << t._x << " " << t._y << " " << t._name << " " << t._salary << " " << t._male << " " << t._home << " " << t._work << " ";
     out << "[";
-    for (int i = 0; i < t._languages.size(); i ++ ) {
+    for (size_t i = 0; i < t._languages.size(); i ++ ) {
         out << t._languages[i] << " ";
     }
     out <<"] ";

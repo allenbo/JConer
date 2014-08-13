@@ -116,7 +116,7 @@ class JArray : public JValue {
         inline std::vector<JValue*> getArray() { return _array; }
         inline int size() { return _array.size(); }
         void printout();
-        inline JValue* get(int i) {
+        inline JValue* get(size_t i) {
             if (i >= 0 && i < _array.size())
                 return _array[i];
             else
@@ -133,7 +133,7 @@ class JArray : public JValue {
         void appendNull();
 
         JValue* pop_back();
-        JValue* pop(int i);
+        JValue* pop(size_t i);
         JValue* deepcopy();
     private:
         std::vector<JValue*> _array;

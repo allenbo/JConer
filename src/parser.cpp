@@ -29,7 +29,7 @@ JValue* Parser::parse(IStream& instream) {
 }
 
 JValue* Parser::parseFromFile(std::string filename) {
-    std::ifstream in(filename);
+    std::ifstream in(filename.c_str());
     IStream fin(in);
     _instream = &fin;
     return parse();
@@ -179,7 +179,7 @@ fail:
 }
 
 JValue* load(std::string filename, PError& err) {
-    std::ifstream in(filename);
+    std::ifstream in(filename.c_str());
     if (!in.good()) {
         err.type = ET_IO_FILE_NOT_FOUND;
         return NULL;

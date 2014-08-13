@@ -93,7 +93,7 @@ std::string JString::getAsciiValue() {
                     i ++;
                 } else {
                     char buffer[13];
-                    int32_t value;
+                    int32_t value = 0;
                     int count = UTF8::decode(p + i, &value);
                     i += count;
                     if (value < 0x10000){
@@ -219,7 +219,7 @@ JArray::~JArray() {
     }
 }
 
-JValue* JArray::pop(int i) {
+JValue* JArray::pop(size_t i) {
     if (i >= 0 && i < _array.size()) {
         JValue* rst = _array[i];
         _array.erase(_array.begin() + i);
@@ -235,7 +235,7 @@ JValue* JArray::pop_back() {
 
 JValue* JArray::deepcopy() {
     JArray* rst = new JArray();
-    for(int i = 0; i < _array.size(); i ++ ) {
+    for(size_t i = 0; i < _array.size(); i ++ ) {
         rst->append(_array[i]->deepcopy());
     }
     return rst;
