@@ -220,7 +220,7 @@ JArray::~JArray() {
 }
 
 JValue* JArray::pop(size_t i) {
-    if (i >= 0 && i < _array.size()) {
+    if (i < _array.size()) {
         JValue* rst = _array[i];
         _array.erase(_array.begin() + i);
         return rst;

@@ -117,7 +117,7 @@ class JArray : public JValue {
         inline int size() { return _array.size(); }
         void printout();
         inline JValue* get(size_t i) {
-            if (i >= 0 && i < _array.size())
+            if (i < _array.size())
                 return _array[i];
             else
                 return NULL;
