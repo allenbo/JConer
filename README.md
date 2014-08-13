@@ -1,5 +1,6 @@
 JConer
 ======
+[![Build Status](https://travis-ci.org/allenbo/JConer.svg?branch=master)](https://travis-ci.org/allenbo/JConer)
 
 A C++ implementation for Json
 
