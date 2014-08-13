@@ -1,0 +1,7 @@
+language: cpp
+compiler:
+  - gcc
+  - clang
+  - g++
+# Change this to your needs
+script: make
