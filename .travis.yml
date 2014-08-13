@@ -3,5 +3,9 @@ compiler:
   - gcc
   - clang
   - g++
-# Change this to your needs
+
+before_script:
+    - cd ../
+    - git clone git@github.com:allenbo/common.git
+    - cd JConer && cp -R ../common/include/common include
 script: make
