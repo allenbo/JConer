@@ -10,6 +10,18 @@ JValue::JValue(ValueType type)
 {
 }
 
+std::string JValue::getString() {
+    return ((JString*)this)->getValue();
+}
+
+long JValue::getInteger() {
+    return ((JInt*)this)->getValue();
+}
+
+bool JValue::getBool() {
+    return _type == VT_TRUE ? true : false;
+}
+
 JValue::~JValue() {
 }
 

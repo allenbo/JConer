@@ -46,6 +46,10 @@ class JValue {
         static inline bool isObject(const JValue* value) { return value->_type == VT_OBJECT;}
         static inline bool isArray(const JValue* value) { return value->_type == VT_ARRAY;}
 
+        std::string getString();
+        long getInteger();
+        bool getBool();
+
     protected:
         ValueType _type;
 };
