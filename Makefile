@@ -9,7 +9,7 @@ CC := gcc
 AR := ar
 
 CFLAG := -O2 -Wall
-LFLAG := -O2 -flto
+LFLAG := -O2 -flto -lpthread
 ARFLAG := -rcs
 
 SRC := $(wildcard $(SRC_DIR)/*.cpp)
