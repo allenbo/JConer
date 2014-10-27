@@ -23,14 +23,8 @@ Examples
 using namespace JCONER;
 PError err;
 JValue* rst = load("myjsonfile", err);
-if (NULL == rst) {
-  std::cout << err.text;
-} else {
-  delete rst;
-}
 err.clear();
 rst = loads("[128, 256]", err);
-if (NULL != rst) delete rst;
 ```
 
 **dump to file and buffer**
@@ -43,7 +37,6 @@ char* buffer;
 dumps(item, &buffer);
 std::cout << buffer << std::endl;
 free(buffer);
-delete item;
 ```
 JCONER VALUES
 ------
@@ -69,7 +62,6 @@ array_item.append(bool_value);
 array_item.append(); // append JNull
 array_item.append(real_value);
 array_item.append(other_jvalue_ptr);
-delete array_item;
 ```
 **JObject**
 ```
@@ -132,7 +124,6 @@ int main() {
     InSerializer sin(rst);
     another_test & sin;
     assert (another_test == test);
-    delete rst;
 }
 ```
 All you have to do is to define a serialize method for every class you want to serialize.

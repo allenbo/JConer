@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include "jconer/allocator.hpp"
 
 #include "common/logging.hpp"
 #define NULL_VALUE 0
@@ -49,6 +50,14 @@ class JValue {
         std::string getString();
         long getInteger();
         bool getBool();
+        
+        void* operator new(size_t size) throw (std::bad_alloc) {
+            return ::operator new(size);
+        }
+
+        void operator delete(void* ptr) throw () {
+            return ::operator delete(ptr);
+        }
 
     protected:
         ValueType _type;
