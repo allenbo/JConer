@@ -52,11 +52,10 @@ class JValue {
         bool getBool();
         
         void* operator new(size_t size) throw (std::bad_alloc) {
-            return ::operator new(size);
+            return allocate(size);
         }
 
-        void operator delete(void* ptr) throw () {
-            return ::operator delete(ptr);
+        void operator delete(void* ptr) throw () {            
         }
 
     protected:

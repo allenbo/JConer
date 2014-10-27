@@ -3,14 +3,11 @@
 
 Allocator alloc;
 
-void* operator new(size_t size) throw (std::bad_alloc) {
+void* allocate(size_t size) throw (std::bad_alloc) {
+  std::cout << "In allocate" << std::endl;
   void* ptr = alloc.malloc(size);
   if (ptr == NULL) {
     throw std::bad_alloc();
   }
   return ptr;
 }
-
-void operator delete(void* ptr) throw() {
-}
-

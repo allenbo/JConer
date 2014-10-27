@@ -22,9 +22,5 @@ class Allocator {
     Arena* arena_;
 };
 
-
-void* operator new(size_t size) throw (std::bad_alloc);
-
-void operator delete(void* ptr) throw();
-
+void* allocate(size_t size) throw (std::bad_alloc);
 #endif
