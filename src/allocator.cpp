@@ -4,7 +4,6 @@
 Allocator alloc;
 
 void* allocate(size_t size) throw (std::bad_alloc) {
-  std::cout << "In allocate" << std::endl;
   void* ptr = alloc.malloc(size);
   if (ptr == NULL) {
     throw std::bad_alloc();

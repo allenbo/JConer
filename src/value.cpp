@@ -23,6 +23,30 @@ bool JValue::getBool() {
     return _type == VT_TRUE ? true : false;
 }
 
+JValue* JValue::get(size_t i) {
+  return ((JArray*)this)->get(i);
+}
+
+JValue* JValue::get(std::string key) {
+  return ((JObject*)this)->get(key);
+}
+
+std::vector<std::string> JValue::getKeys() {
+  return ((JObject*)this)->getKeys();
+}
+
+bool JValue::contain(std::string key) {
+  return ((JObject*)this)->contain(key);
+}
+
+int JValue::size() {
+  if (isObject()) {
+    return ((JObject*)this)->size();
+  } else {
+    return ((JArray*)this)->size();
+  }
+}
+
 JValue::~JValue() {
 }
 
@@ -32,12 +56,14 @@ JNull::JNull()
 {
 }
 
+JNull JNull::_instance;
+
 void JNull::printout() {
     printf("null");
 }
 
 JValue* JNull::deepcopy() {
-    return new JNull();
+    return JNull::getInstance();
 }
 
 // JInt definition
@@ -138,12 +164,14 @@ JTrue::JTrue()
 {
 }
 
+JTrue JTrue::_instance;
+
 void JTrue::printout() {
     printf("true");
 }
 
 JValue* JTrue::deepcopy()  {
-    return new JTrue();
+    return JTrue::getInstance();
 }
 
 // JFalse definition
@@ -152,12 +180,14 @@ JFalse::JFalse()
 {
 }
 
+JFalse JFalse::_instance;
+
 void JFalse::printout() {
     printf("false");
 }
 
 JValue* JFalse::deepcopy()  {
-    return new JFalse();
+    return JFalse::getInstance();
 }
 
 // JArray definition
@@ -204,15 +234,15 @@ void JArray::append(const double value) {
 void JArray::append(const bool value) {
     JValue* elt = NULL;
     if (value) {
-        elt = new JTrue();
+        elt = JTrue::getInstance();
     } else {
-        elt = new JFalse();
+        elt = JFalse::getInstance();
     }
     _array.push_back(elt);
 }
 
 void JArray::appendNull() {
-    JValue* elt = new JNull();
+    JValue* elt = JNull::getInstance();
     _array.push_back(elt);
 }
 
@@ -228,6 +258,7 @@ void JArray::printout() {
 
 JArray::~JArray() {
     for(size_t i = 0; i < _array.size(); i ++ ) {
+        if (_array[i]->isFalse() || _array[i]->isTrue() || _array[i]->isNull()) continue;
         delete _array[i];
     }
 }
@@ -304,14 +335,14 @@ void JObject::put(const std::string key, const double value) {
 
 void JObject::put(const std::string key, const bool value)  {
     if (value) {
-        _object[key] = new JTrue();
+        _object[key] = JTrue::getInstance();
     } else {
-        _object[key] = new JFalse();
+        _object[key] = JFalse::getInstance();
     }
 }
 
 void JObject::put(const std::string key) {
-    _object[key] = new JNull();
+    _object[key] = JNull::getInstance();
 }
 
 void JObject::printout() {
@@ -328,6 +359,7 @@ void JObject::printout() {
 JObject::~JObject() {
     for(std::map<std::string, JValue*>::iterator iter = _object.begin();
             iter != _object.end(); iter ++) {
+        if (iter->second->isFalse() || iter->second->isTrue() || iter->second->isNull()) continue;
         delete iter->second;
     }
 }

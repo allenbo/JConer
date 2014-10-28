@@ -47,9 +47,24 @@ class JValue {
         static inline bool isObject(const JValue* value) { return value->_type == VT_OBJECT;}
         static inline bool isArray(const JValue* value) { return value->_type == VT_ARRAY;}
 
+        inline bool isString() { return _type == VT_STRING; }
+        inline bool isInteger() { return _type == VT_INTEGER; }
+        inline bool isReal() { return _type == VT_REAL; }
+        inline bool isTrue() { return _type == VT_TRUE; }
+        inline bool isFalse() { return _type == VT_FALSE; }
+        inline bool isNull() { return _type == VT_NULL;}
+        inline bool isObject() { return _type == VT_OBJECT; }
+        inline bool isArray() { return _type == VT_ARRAY; }
+
         std::string getString();
         long getInteger();
         bool getBool();
+
+        JValue* get(size_t i);
+        JValue* get(std::string key);
+        int size();
+        std::vector<std::string> getKeys();
+        bool contain(std::string key);
         
         void* operator new(size_t size) throw (std::bad_alloc) {
             return allocate(size);
@@ -64,10 +79,15 @@ class JValue {
 
 class JNull : public  JValue {
     public:
-        JNull();
+        static JNull* getInstance() {
+            return &_instance;
+        }
         inline NULL_TYPE getValue() { return NULL_VALUE; }
         void printout();
         JValue* deepcopy();
+    private:
+        JNull();
+        static JNull _instance;
 };
 
 class JInt : public JValue {
@@ -104,18 +124,28 @@ class JString : public JValue {
 
 class JTrue : public JValue {
     public:
-        JTrue();
+        static JTrue* getInstance() {
+            return &_instance;
+        }
         inline bool getValue() { return true; }
         void printout();
         JValue* deepcopy();
+    private:
+        JTrue();
+        static JTrue _instance;
 };
 
 class JFalse : public JValue {
     public:
-        JFalse();
+        static JFalse* getInstance() {
+            return &_instance;
+        }
         inline bool getValue() { return true; }
         void printout();
         JValue* deepcopy();
+    private:
+        JFalse();
+        static JFalse _instance;
 };
 
 class JArray : public JValue {
