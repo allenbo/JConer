@@ -6,129 +6,142 @@
 #include <set>
 #include <list>
 #include <vector>
+#include <cassert>
 
 namespace JCONER {
 
 class OutSerializer {
     public:
         OutSerializer() {
-            _array = NULL;
+            clear(); 
+        }
+
+        JValue* get_content() { return _array; }
+
+        void clear() {
+          _array = new JArray();
+          _curr = _array;
         }
 
         template<class Type>
-        JValue* operator&(Type& value) {
+        void operator&(Type& value) {
             JArray* item = new JArray();
-            JArray* cur_array = _array;
+            JArray* old_curr = _curr;
+            _curr->append(item);
+            _curr = item;
 
-            if (cur_array != NULL)
-                _array->append(item);
-
-            _array = item;
             value.serialize(*this);
-
-            if (cur_array != NULL) {
-                _array = cur_array;
-                return _array;
-            } else {
-                JArray* rst = _array;
-                _array = NULL;
-                return rst;
-            }
+            _curr = old_curr;
         }
 
         template<template<class T, class Allocator> class Container, class ValueType>
         void operator&(Container<ValueType, std::allocator<ValueType> >& value) {
             JArray* item = new JArray();
-            JArray* cur_array = _array;
-            _array->append(item);
+            JArray* old_curr = _curr;
+            _curr->append(item);
+            _curr = item;
 
-            _array = item;
             for(typename Container<ValueType, std::allocator<ValueType> >::iterator iter = value.begin();
                     iter != value.end(); iter ++) {
                 *this & *iter;
             }
-            _array = cur_array;
+            _curr = old_curr;
         }
 
-        template<class V>
-        void operator&(std::map<std::string,V>& value) {
-            JObject* item = new JObject();
-            for(typename std::map<std::string, V>::iterator iter = value.begin();
+        template<class K, class V>
+        void operator&(std::pair<K, V>& value) {
+            JArray* item = new JArray();
+            JArray* old_curr = _curr;
+            _curr->append(item);
+            _curr = item;
+
+            *this & value.first;
+            *this & value.second;
+            _curr = old_curr;
+        }
+
+        template<class K, class V>
+        void operator&(std::map<K,V>& value) {
+            JArray* item = new JArray();
+            JArray* old_curr = _curr;
+            _curr->append(item);
+            _curr = item;
+
+            for(typename std::map<K, V>::iterator iter = value.begin();
                     iter != value.end(); iter ++) {
-                *this & iter->second;
-                JValue* val = _array->pop_back();
-                item->put(iter->first, val);
+                *this & *iter;
             }
-            _array->append(item);
+            _curr = old_curr;
         }
 
         void operator&(const int value) {
-            _array->append(value);
+            _curr->append(value);
         }
 
         void operator&(const long value) {
-            _array->append(value);
+            _curr->append(value);
         }
 
         void operator&(const std::string value) {
-            _array->append(value);
+            _curr->append(value);
         }
 
         void operator&(const bool value) {
-            _array->append(value);
+            _curr->append(value);
         }
 
         void operator&(const char* value) {
-            _array->append(value);
+            _curr->append(value);
         }
 
         void operator&(const double value) {
-            _array->append(value);
+            _curr->append(value);
         }
+
+        void operator&(const float value) {
+            _curr->append(value);
+        }
+
 
     private:
         JArray* _array;
+        JArray* _curr;
 };
 
 
 class InSerializer {
     public:
-        InSerializer(JArray* instance) {
-            _instance = instance;
-            _array = NULL;
+        InSerializer(JValue* array) {
+            assert(array->isArray());
+            _array = (JArray*)array;
+            _curr = _array;
             _index = 0;
         }
 
         template<class Type>
         void operator&(Type& value) {
-            JArray* cur_array = _array;
-            int cur_index = _index;
+            JArray* old_curr = _curr;
+            _curr = (JArray*)_curr->get(_index);
+
+            int old_index = _index;
+            _index = 0;
             
-            if (cur_array != NULL) {
-                _array = (JArray*)(cur_array->get(_index));
-                _index = 0;
-            } else {
-                _array = _instance;
-            }
             value.serialize(*this);
 
-            _array = cur_array;
-            _index = cur_index + 1;
-
-            if(cur_array == NULL) {
-                _array = _instance;
-                _index = 0;
-            }
+            _curr = old_curr;
+            _index = old_index + 1;
         }
 
         template<template<class T, class Allocator> class Container, class ValueType>
         void operator&(Container<ValueType, std::allocator<ValueType> >& value) {
-            JArray* cur_array = _array;
-            int cur_index = _index;
+            value.clear();
+            JArray* old_curr  = _curr;
+            _curr = (JArray*)_curr->get(_index);
 
-            _array = (JArray*)(cur_array->get(_index));
+            int old_index = _index;
             _index = 0;
-            for(int i = 0; i < _array->size(); i ++) {
+
+            for(int i = 0; i < _curr->size(); i ++) {
                 ValueType tmp;
                 value.push_back(tmp);
             }
@@ -137,51 +150,65 @@ class InSerializer {
                     iter != value.end(); iter ++) {
                 *this & *iter;
             }
-            _array = cur_array;
-            _index = cur_index + 1;
+            _curr = old_curr;
+            _index = old_index + 1;
         }
 
-        template<class V>
-        void operator&(std::map<std::string,V>& value) {
-            JArray* cur_array = _array;
-            int cur_index = _index;
-            JObject * item = (JObject*)(_array->get(_index));
+        template<class K, class V>
+        void operator&(std::pair<K, V>& value) {
+            JArray* old_curr  = _curr;
+            _curr = (JArray*)_curr->get(_index);
 
-            std::vector<std::string> keys = item->getKeys();
-            int i;
-            for(i = 0; i < keys.size(); i ++ ) {
-                JValue* value_item = item->get(keys[i]);
-                JArray* tmp_array = new JArray();
-                tmp_array->append(value_item);
-                _array = tmp_array;
-                _index = 0;
-                V tmp;
-                *this & tmp;
-                value[keys[i]] = tmp;
+            int old_index = _index;
+            _index = 0;
+
+            *this & value.first;
+            *this & value.second;
+
+            _curr = old_curr;
+            _index = old_index + 1;
+
+        }
+
+        template<class K, class V>
+        void operator&(std::map<K,V>& value) {
+            value.clear();
+            JArray* old_curr  = _curr;
+            _curr = (JArray*)_curr->get(_index);
+
+            int old_index = _index;
+            _index = 0;
+
+            for(int i = 0; i < _curr->size(); i ++) {
+                K k;
+                V v;
+                std::pair<K, V> p = std::make_pair(k, v);
+                *this & p;
+                value.insert(p);
             }
 
-            _array = cur_array;
-            _index = cur_index + 1;
+            _curr = old_curr;
+            _index = old_index + 1;
         }
 
 
         void operator&(int& value) {
-            value = ((JInt*)_array->get(_index))->getValue();
+            value = _curr->get(_index)->getInteger();
             _index ++;
         }
 
         void operator&(long& value) {
-            value = ((JInt*)_array->get(_index))->getValue();
+            value = _curr->get(_index)->getInteger();
             _index ++;
         }
 
         void operator&(std::string& value) {
-            value = ((JString*)_array->get(_index))->getValue();
+            value = _curr->get(_index)->getString();
             _index ++;
         }
 
         void operator&(bool& value) {
-            if (_array->get(_index)->type() == VT_TRUE)
+            if (_array->get(_index)->isTrue())
                 value = true;
             else
                 value = false;
@@ -189,12 +216,17 @@ class InSerializer {
         }
 
         void operator&(double& value) {
-            value = ((JReal*)_array->get(_index))->getValue();
+            value = _curr->get(_index)->getReal();
+            _index ++;
+        }
+
+        void operator&(float& value) {
+            value = _curr->get(_index)->getReal();
             _index ++;
         }
     private:
-        JArray* _instance;
         JArray* _array;
+        JArray* _curr;
         int _index;
 };
 }

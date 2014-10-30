@@ -1,190 +1,247 @@
 #include "jconer/json.hpp"
 #include <iostream>
+#include <vector>
+#include <map>
+#include <cassert>
 
 using namespace JCONER;
 
-class Location {
+class Simple {
     public:
-        Location(std::string state, std::string city) {
-            _state = state;
-            _city = city;
+        Simple() : int_value(0), string_value("") { }
+        Simple(int i, std::string s): int_value(i), string_value(s) {}
+        Simple(const Simple& s): int_value(s.int_value), string_value(s.string_value) {}
+
+        template<class Serializer>
+            void serialize(Serializer& serializer) {
+                serializer & int_value;      
+                serializer & string_value;
+            }
+        friend std::ostream& operator<<(std::ostream& out, const Simple& s) {
+            out << s.int_value << " " << s.string_value;
+            return out;
+        }
+        friend bool operator==(const Simple& lhs, const Simple& rhs);
+    private:
+        int int_value;
+        std::string string_value;
+};
+
+bool operator==(const Simple& lhs, const Simple& rhs) {
+    return lhs.int_value == rhs.int_value && lhs.string_value == rhs.string_value;
+}
+
+bool operator!=(const Simple& lhs, const Simple& rhs) {
+    return !(lhs == rhs);
+}
+
+
+class Complex {
+    public:
+        Complex():int_value(0), string_value("") {
+            vector_float_value.clear();
         }
 
-        Location(const Location& other ) {
-            _state = other._state;
-            _city = other._city;
-        }
-
-        Location(){
-            _state = "";
-            _city = "";
+        Complex(int i, std::string s): int_value(i), string_value(s) {
+            for(int i = 0; i < 10; i ++ ) {
+                vector_float_value.push_back(i * 1.2);
+            }
         }
 
         template<class Serializer>
-        void serialize(Serializer& serializer) {
-            serializer & _state;
-            serializer & _city;
+            void serialize(Serializer& serializer) {
+                serializer & int_value;
+                serializer & string_value;
+                serializer & vector_float_value;
+            }
+        friend std::ostream& operator<<(std::ostream& out, const Complex& c) {
+            out << c.int_value << " " << c.string_value << " [ ";
+            for(int i = 0; i < 10; i ++ ) {
+                out << c.vector_float_value[i];
+                if (i != 10 - 1) {
+                    out << " ,";
+                }
+            }
+            out << " ]";
+            return out;
         }
-        friend bool operator==(const Location & lhs, const Location& rhs);
-        friend std::ostream& operator<<(std::ostream& out, const Location& loc);
-
+        friend bool operator==(const Complex& lhs, const Complex& rhs);
     private:
-        std::string _state;
-        std::string _city;
+        int int_value;
+        std::string string_value;
+        std::vector<float> vector_float_value;
 };
 
-bool operator==(const Location &lhs, const Location& rhs) {
-    if (lhs._state != rhs._state) return false;
-    if (lhs._city != rhs._city) return false;
+bool operator==(const Complex& lhs, const Complex& rhs) {
+    if (lhs.int_value != rhs.int_value) return false;
+    if (lhs.string_value != rhs.string_value) return false;
+    if (lhs.vector_float_value.size() != rhs.vector_float_value.size()) return false;
+    for(int i = 0; i < lhs.vector_float_value.size(); i ++) {
+        if (lhs.vector_float_value[i] != rhs.vector_float_value[i]) return false;
+    }
     return true;
 }
 
-std::ostream& operator<<(std::ostream& out, const Location& loc) {
-    out << "[" << loc._state << " " << loc._city << "]";
-    return out;
+bool operator!=(const Complex& lhs, const Complex& rhs) {
+    return !(lhs == rhs);
 }
 
-class Inner {
-    public:
-        Inner(int __1, int __2)
-            :_1(__1), _2(__2) {}
+void test_primitives() {
+    // out serializer
+    OutSerializer sout;
+    sout & 4;
+    sout & 1.1f;
+    sout & "string";
+    JValue* content = sout.get_content();
+    dump(content, std::cout, DUMP_ENSURE_ASCII);
+    std::cout << std::endl << "Suppose to print out [" << 4 << ", " <<  1.1f << ", string ]" << std::endl;
 
-        template<class Serializer>
-        void serialize(Serializer& serializer) {
-            serializer & _1;
-            serializer & _2;
-        }
-        friend std::ostream& operator<<(std::ostream& out, const Inner& inner);
-    private:
-        int _1, _2;
-};
+    // in serializer
+    InSerializer sin(content);
+    int i;
+    float f;
+    std::string s;
 
-std::ostream& operator<<(std::ostream& out, const Inner& inner) {
-    out << inner._1 << " " << inner._2;
-    return out;
+    sin & i;
+    sin & f;
+    sin & s;
+
+    assert (i == 4 && f == 1.1f && s == "string");
+
 }
 
-class NestedInfo {
-    public:
-        NestedInfo(int __1, int __2, int __3)
-            :_1(__1), _2(__2, __3) {}
+void test_vector_primitive() {
+    // out serializer 
+    OutSerializer sout;
+    std::vector<int> int_vec(10);
+    for(int i = 0; i < 10; i ++ ) {
+        int_vec[i] = i;
+    }
 
-        template<class Serializer>
-        void serialize(Serializer& serializer) {
-            serializer & _1;
-            serializer & _2;
+    sout & int_vec;
+    JValue* content = sout.get_content();
+    dump(content, std::cout, DUMP_ENSURE_ASCII);
+
+    std::cout << std::endl << "Suppose to print out [ [";
+    for(int i = 0; i < 10; i ++ ) {
+        std::cout << i;
+        if (i != 10 - 1) {
+            std::cout << ", ";
         }
-        friend std::ostream& operator<<(std::ostream& out, const NestedInfo& info);
-    private:
-        int _1;
-        Inner _2;
-};
-std::ostream& operator<<(std::ostream& out, const NestedInfo& info) {
-    out << info._1 << " " << info._2;
-    return out;
+    }
+    std::cout << "] ]" << std::endl;
+
+    // in serializer
+    InSerializer sin(content);
+    std::vector<int> another_int_vec;
+
+    sin & another_int_vec;
+    assert (another_int_vec.size() == 10);
+    for(int i = 0; i < 10; i ++ ) {
+        assert(another_int_vec[i] == i);
+    }
 }
 
-class Person {
-    public:
-        Person(int x, int y)
-            :_x(x), _y(y), _home("NY", "New York City"), _work("CA", "San Jose"), _nonsense(3, 4, 5){
-            _name = "allenbo";
-            _salary = 7549.8;
-            _male = true;
-            _languages.push_back("C++");
-            _languages.push_back("Java");
-            _languages.push_back("Python");
-            _languages.push_back("Javascript");
+void  test_pair() {
+    // out serializer
+    OutSerializer sout;
+    std::pair<int, double> p = std::make_pair(20, 10.2);
 
-            _scores["Operating System"] = 90;
-            _scores["Algorithm"] = 80;
+    sout & p;
+    JValue* content = sout.get_content();
+    dump(content, std::cout, DUMP_ENSURE_ASCII);
 
-            _maps["home"] = _home;
-            _maps["work"] = _work;
-        }
+    std::cout << std::endl << "Suppose to print out [ [";
+    std::cout << "20 , 10.2 ] ]" << std::endl;
 
-        Person(int x, int y, std::string name, double salary, bool male)
-            :_x(x), _y(y), _name(name), _salary(salary), _male(male), _nonsense(6, 7, 8) {
-        }
+    // in serializer
+    InSerializer sin(content);
+    std::pair<int, double> anp;
+    sin & anp;
+    assert(anp.first == p.first && anp.second == p.second);
+}
 
-        template<class Serializer>
-        void serialize(Serializer& serializer) {
-            serializer & _x;
-            serializer & _y;
-            serializer & _name;
-            serializer & _salary;
-            serializer & _male;
-            serializer & _home;
-            serializer & _work;
-            serializer & _languages;
-            serializer & _scores;
-            serializer & _maps;
-            serializer & _nonsense;
-        }
-
-        bool operator==(const Person& other) {
-            if (_x != other._x) return false;
-            if (_y != other._y) return false;
-            if (_name != other._name) return false;
-            if (_salary != other._salary) return false;
-            if (_male != other._male) return false;
-            //if (_home != other._home) return false;
-            //if (_work != other._work) return false;
-            return true;
-        }
-        friend std::ostream& operator<<(std::ostream& out, const Person & t);
-    private:
-        int _x;
-        int _y;
-        std::string _name;
-        double _salary;
-        bool _male;
-        Location _home;
-        Location _work;
-        std::vector<std::string> _languages;
-        std::map<std::string, int> _scores;
-        std::map<std::string, Location> _maps;
-
-        NestedInfo _nonsense;
-};
-
-std::ostream& operator<<(std::ostream& out, const Person & t) {
-    out << t._x << " " << t._y << " " << t._name << " " << t._salary << " " << t._male << " " << t._home << " " << t._work << " ";
-    out << "[";
-    for (size_t i = 0; i < t._languages.size(); i ++ ) {
-        out << t._languages[i] << " ";
+void test_map() {
+    // out serializer
+    OutSerializer sout;
+    std::map<int, std::string> m;
+    for(int i = 0; i < 10; i ++) {
+        m[i] = "value";
     }
-    out <<"] ";
-    out << "{";
-    for (std::map<std::string, int>::const_iterator iter = t._scores.begin(); iter != t._scores.end(); iter ++) {
-        out << iter->first << ":" << iter->second << " ";
-    }
-    out << "} ";
-    for (std::map<std::string, Location>::const_iterator iter = t._maps.begin(); iter != t._maps.end(); iter ++) {
-        out << iter->first << ":" << iter->second << " ";
-    }
-    out << "} ";
 
-    out << t._nonsense;
+    sout & m;
+    JValue* content = sout.get_content();
+    dump(content, std::cout, DUMP_ENSURE_ASCII);
 
-    return out;
+    std::cout << std::endl << "Suppose to print out [ [";
+    for(int i = 0; i < 10; i ++ ) {
+        std::cout << "[ " << i << ", value ]";
+        if (i != 9 ) {
+            std::cout << ", ";
+        }
+    }
+    std::cout << "] ]" << std::endl;
+
+    // in seralizer
+    InSerializer sin(content);
+    std::map<int, std::string> anm;
+    sin & anm;
+
+    assert(anm.size() == 10);
+    for(int i = 0; i < 10; i ++) {
+        assert(anm.count(i) == 1);
+        assert(anm[i] == "value");
+    }
+}
+
+void test_simple() {
+    // out serializer 
+    OutSerializer sout;
+    Simple s(10, "John");
+
+    sout & s;
+    JValue* content = sout.get_content();
+    dump(content, std::cout, DUMP_ENSURE_ASCII);
+
+    std::cout << std::endl << "Suppose to print out [ [";
+    std::cout << s << " ] ]" << std::endl;
+
+    // in serializer
+    InSerializer sin(content);
+    Simple ans;
+    sin & ans;
+
+    assert(ans == s);
+}
+
+void test_complex() {
+    // out serializer
+    OutSerializer sout;
+    Complex c(10, "John");
+
+    sout & c;
+    JValue* content = sout.get_content();
+    dump(content, std::cout, DUMP_ENSURE_ASCII);
+
+    std::cout << std::endl << "Suppose to print out [ [";
+    std::cout << c << " ] ]" << std::endl;
+
+    // in serializer
+    InSerializer sin(content);
+    Complex anc;
+
+    sin & anc;
+
+    assert(anc == c);
 }
 
 int main() {
-    Person t(1, 2);
-    OutSerializer sout;
-    JValue* arr_item = sout & t;
-    dump(arr_item, std::cout, DUMP_PRETTY_PRINT | DUMP_ENSURE_ASCII);
-    std::cout << std::endl;
-    InSerializer sin((JArray*)arr_item);
-    Person another(3, 4, "another name", 1.1, false);
-    sin & another;
-    //std::cout << "first " << t << std::endl;
-    //std::cout << "another " << another << std::endl;
-    delete arr_item;
+    test_primitives();
+    test_vector_primitive();
 
-    arr_item = sout & another;
-    dump(arr_item, std::cout, DUMP_PRETTY_PRINT | DUMP_ENSURE_ASCII);
-    std::cout << std::endl;
-    delete arr_item;
+    test_pair();
+    test_map();
+
+    test_simple();
+    test_complex();
 }

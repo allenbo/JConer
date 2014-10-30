@@ -23,6 +23,10 @@ bool JValue::getBool() {
     return _type == VT_TRUE ? true : false;
 }
 
+double JValue::getReal() {
+    return ((JReal*)this)->getValue();
+}
+
 JValue* JValue::get(size_t i) {
   return ((JArray*)this)->get(i);
 }

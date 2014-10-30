@@ -89,15 +89,15 @@ JValue* Parser::_parseReal() {
 }
 
 JValue* Parser::_parseTrue() {
-    return new JTrue();
+    return JTrue::getInstance();
 }
 
 JValue* Parser::_parseFalse() {
-    return new JFalse();
+    return JFalse::getInstance();
 }
 
 JValue* Parser::_parseNull() {
-    return new JNull();
+    return JNull::getInstance();;
 }
 
 JValue* Parser::_parseArray() {

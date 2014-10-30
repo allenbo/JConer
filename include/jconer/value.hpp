@@ -59,6 +59,7 @@ class JValue {
         std::string getString();
         long getInteger();
         bool getBool();
+        double getReal();
 
         JValue* get(size_t i);
         JValue* get(std::string key);
