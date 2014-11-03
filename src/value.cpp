@@ -222,6 +222,11 @@ void JArray::append(const int value) {
     _array.push_back(elt);
 }
 
+void JArray::append(const size_t value) {
+    JValue* elt = new JInt(value);
+    _array.push_back(elt);
+}
+
 void JArray::append(const std::string value) {
     JValue* elt = new JString(value);
     _array.push_back(elt);
@@ -318,6 +323,10 @@ InsertError JObject::put(const std::string key, JValue* value) {
 }
 
 void JObject::put(const std::string key, const long value) {
+    _object[key] = new JInt(value);
+}
+
+void JObject::put(const std::string key, const size_t value) {
     _object[key] = new JInt(value);
 }
 

@@ -168,6 +168,7 @@ class JArray : public JValue {
 
         InsertError append(JValue* element);
         void append(const long value);
+        void append(const size_t value);
         void append(const int value);
         void append(const std::string value);
         void append(const char* str);
@@ -211,6 +212,7 @@ class JObject : public JValue {
 
         InsertError put(const std::string, JValue*); 
         void put(const std::string, const long);
+        void put(const std::string, const size_t);
         void put(const std::string, const int);
         void put(const std::string, const std::string);
         void put(const std::string, const char*);
