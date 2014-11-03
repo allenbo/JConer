@@ -92,7 +92,7 @@ void test_primitives() {
     sout & 4;
     sout & 1.1f;
     sout & "string";
-    JValue* content = sout.get_content();
+    JValue* content = sout.getContent();
     dump(content, std::cout, DUMP_ENSURE_ASCII);
     std::cout << std::endl << "Suppose to print out [" << 4 << ", " <<  1.1f << ", string ]" << std::endl;
 
@@ -119,7 +119,7 @@ void test_vector_primitive() {
     }
 
     sout & int_vec;
-    JValue* content = sout.get_content();
+    JValue* content = sout.getContent();
     dump(content, std::cout, DUMP_ENSURE_ASCII);
 
     std::cout << std::endl << "Suppose to print out [ [";
@@ -148,7 +148,7 @@ void  test_pair() {
     std::pair<int, double> p = std::make_pair(20, 10.2);
 
     sout & p;
-    JValue* content = sout.get_content();
+    JValue* content = sout.getContent();
     dump(content, std::cout, DUMP_ENSURE_ASCII);
 
     std::cout << std::endl << "Suppose to print out [ [";
@@ -170,7 +170,7 @@ void test_map() {
     }
 
     sout & m;
-    JValue* content = sout.get_content();
+    JValue* content = sout.getContent();
     dump(content, std::cout, DUMP_ENSURE_ASCII);
 
     std::cout << std::endl << "Suppose to print out [ [";
@@ -200,7 +200,7 @@ void test_simple() {
     Simple s(10, "John");
 
     sout & s;
-    JValue* content = sout.get_content();
+    JValue* content = sout.getContent();
     dump(content, std::cout, DUMP_ENSURE_ASCII);
 
     std::cout << std::endl << "Suppose to print out [ [";
@@ -220,7 +220,7 @@ void test_complex() {
     Complex c(10, "John");
 
     sout & c;
-    JValue* content = sout.get_content();
+    JValue* content = sout.getContent();
     dump(content, std::cout, DUMP_ENSURE_ASCII);
 
     std::cout << std::endl << "Suppose to print out [ [";

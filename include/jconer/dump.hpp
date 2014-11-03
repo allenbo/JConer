@@ -18,6 +18,7 @@ namespace JCONER {
 
 void dump(JValue* value, std::ostream& out, int flag = DUMP_ENSURE_ASCII);
 void dumpFile(JValue* value, std::string filename, int flag = DUMP_ENSURE_ASCII);
+std::string dumps(JValue* value, int flag = DUMP_ENSURE_ASCII);
 void dumps(JValue* value, char** pbuffer, int flag = DUMP_ENSURE_ASCII);
 
 }

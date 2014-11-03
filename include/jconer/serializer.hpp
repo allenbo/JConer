@@ -16,7 +16,12 @@ class OutSerializer {
             clear(); 
         }
 
-        JValue* get_content() { return _array; }
+        JValue* getContent() { return _array; }
+
+        std::string getText() {
+            std::string jsonText = dumps(_array);
+            return jsonText;
+        }
 
         void clear() {
           _array = new JArray();
@@ -116,6 +121,16 @@ class InSerializer {
             _array = (JArray*)array;
             _curr = _array;
             _index = 0;
+        }
+
+        InSerializer(std::string jsonText) {
+          PError err;
+          JValue * array = loads(jsonText, err);
+          assert(array != NULL && array->isArray());
+
+          _array = (JArray*)array;
+          _curr = _array;
+          _index = 0;
         }
 
         template<class Type>

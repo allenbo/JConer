@@ -108,6 +108,13 @@ void dumpFile(JValue* value, std::string filename, int flag) {
     fout.close();
 }
 
+std::string dumps(JValue* value, int flag) {
+    std::stringstream ssout;
+    dump(value, ssout, flag);
+    std::string jsonString = ssout.str();
+    return jsonString;
+}
+
 void dumps(JValue* value, char** pbuffer, int flag) {
     std::stringstream ssout;
     dump(value, ssout, flag);
