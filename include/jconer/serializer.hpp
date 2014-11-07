@@ -10,6 +10,14 @@
 
 namespace JCONER {
 
+
+class SerializeFailException : public std::exception {
+  public:
+    const char* what() const throw() {
+      return "Serialize Failed";
+    }
+};
+
 class OutSerializer {
     public:
         OutSerializer() {
@@ -135,6 +143,7 @@ class InSerializer {
 
         template<class Type>
         void operator&(Type& value) {
+            _check();
             JArray* old_curr = _curr;
             _curr = (JArray*)_curr->get(_index);
 
@@ -149,6 +158,7 @@ class InSerializer {
 
         template<template<class T, class Allocator> class Container, class ValueType>
         void operator&(Container<ValueType, std::allocator<ValueType> >& value) {
+            _check();
             value.clear();
             JArray* old_curr  = _curr;
             _curr = (JArray*)_curr->get(_index);
@@ -171,6 +181,7 @@ class InSerializer {
 
         template<class K, class V>
         void operator&(std::pair<K, V>& value) {
+            _check();
             JArray* old_curr  = _curr;
             _curr = (JArray*)_curr->get(_index);
 
@@ -187,6 +198,7 @@ class InSerializer {
 
         template<class K, class V>
         void operator&(std::map<K,V>& value) {
+            _check();
             value.clear();
             JArray* old_curr  = _curr;
             _curr = (JArray*)_curr->get(_index);
@@ -208,21 +220,25 @@ class InSerializer {
 
 
         void operator&(int& value) {
+            _check();
             value = _curr->get(_index)->getInteger();
             _index ++;
         }
 
         void operator&(long& value) {
+            _check();
             value = _curr->get(_index)->getInteger();
             _index ++;
         }
 
         void operator&(std::string& value) {
+            _check();
             value = _curr->get(_index)->getString();
             _index ++;
         }
 
         void operator&(bool& value) {
+            _check();
             if (_array->get(_index)->isTrue())
                 value = true;
             else
@@ -231,11 +247,13 @@ class InSerializer {
         }
 
         void operator&(double& value) {
+            _check();
             value = _curr->get(_index)->getReal();
             _index ++;
         }
 
         void operator&(float& value) {
+            _check();
             value = _curr->get(_index)->getReal();
             _index ++;
         }
@@ -243,6 +261,12 @@ class InSerializer {
         JArray* _array;
         JArray* _curr;
         int _index;
+
+        inline void _check() {
+          if (_index >= _array->size()) {
+            throw SerializeFailException();
+          }
+        }
 };
 }
 #endif
