@@ -66,13 +66,14 @@ class JValue {
         int size();
         std::vector<std::string> getKeys();
         bool contain(std::string key);
-        
+#if false
         void* operator new(size_t size) throw (std::bad_alloc) {
             return allocate(size);
         }
 
         void operator delete(void* ptr) throw () {            
         }
+#endif
 
     protected:
         ValueType _type;

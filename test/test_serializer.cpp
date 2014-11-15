@@ -107,6 +107,7 @@ void test_primitives() {
     sin & s;
 
     assert (i == 4 && f == 1.1f && s == "string");
+    delete content;
 
 }
 
@@ -140,6 +141,7 @@ void test_vector_primitive() {
     for(int i = 0; i < 10; i ++ ) {
         assert(another_int_vec[i] == i);
     }
+    delete content;
 }
 
 void  test_pair() {
@@ -159,6 +161,7 @@ void  test_pair() {
     std::pair<int, double> anp;
     sin & anp;
     assert(anp.first == p.first && anp.second == p.second);
+    delete content;
 }
 
 void test_map() {
@@ -192,6 +195,7 @@ void test_map() {
         assert(anm.count(i) == 1);
         assert(anm[i] == "value");
     }
+    delete content;
 }
 
 void test_simple() {
@@ -212,6 +216,7 @@ void test_simple() {
     sin & ans;
 
     assert(ans == s);
+    delete content;
 }
 
 void test_complex() {
@@ -233,6 +238,7 @@ void test_complex() {
     sin & anc;
 
     assert(anc == c);
+    delete content;
 }
 
 int main() {

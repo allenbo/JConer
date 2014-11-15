@@ -19,4 +19,5 @@ int main(int argc, char** argv) {
     }
     rst->printout();
     printf("\n");
+    delete rst;
 }

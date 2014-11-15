@@ -8,7 +8,7 @@ CPP := g++
 CC := gcc
 AR := ar
 
-CFLAG := -O2 -Wall
+CFLAG := -O2 -Wall -std=c++11
 LFLAG := -O2 -flto -lpthread
 ARFLAG := -rcs
 
