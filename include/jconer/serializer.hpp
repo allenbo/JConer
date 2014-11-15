@@ -239,7 +239,7 @@ class InSerializer {
 
         void operator&(bool& value) {
             _check();
-            if (_array->get(_index)->isTrue())
+            if (_curr->get(_index)->isTrue())
                 value = true;
             else
                 value = false;
@@ -263,7 +263,7 @@ class InSerializer {
         int _index;
 
         inline void _check() {
-          if (_index >= _array->size()) {
+          if (_index >= _curr->size()) {
             throw SerializeFailException();
           }
         }
