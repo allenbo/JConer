@@ -151,7 +151,6 @@ class JFalse : public JValue {
 };
 
 class JArray : public JValue {
-    CLASS_MAKE_LOGGER
     public:
         JArray();
         JArray(const std::vector<JValue*>& array);

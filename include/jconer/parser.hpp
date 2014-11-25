@@ -10,7 +10,6 @@
 namespace JCONER {
 
 class Parser {
-    CLASS_MAKE_LOGGER
     public:
         Parser();
         Parser(IStream& instream);

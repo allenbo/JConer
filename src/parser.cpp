@@ -37,7 +37,7 @@ JValue* Parser::parseFromFile(std::string filename) {
 
 void Parser::_getNextToken() {
     if (_instream == NULL) {
-        CLOG_FATAL("There is no stream\n");
+        LOG(FATAL) << "There is no stream" << std::endl;
     }
     _cur_token = _instream->getNextToken(); 
 }

@@ -36,8 +36,6 @@ class IStream {
         int _cur_pos;
         int _content_length;
         PError _err;
-
-    CLASS_MAKE_LOGGER
 };
 
 }

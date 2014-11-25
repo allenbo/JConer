@@ -17,7 +17,7 @@ IStream::IStream(istream& in)
     _content_length = -1;
 
     if ((_buff = (char*) malloc(BUFSIZE) ) == NULL) {
-        CLOG_FATAL("Run out of memory");
+        LOG(FATAL) << "Run out of memory" << std::endl;
     }
     _end = _cur = _buff;
     _readBuffer();

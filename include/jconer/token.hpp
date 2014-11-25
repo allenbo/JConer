@@ -2,7 +2,7 @@
 #define __JCONER_TOKEN_HPP__
 
 #include <string>
-#include "common/logging.hpp"
+#include "common/all.hpp"
 using namespace COMMON;
 
 namespace JCONER {
@@ -38,14 +38,12 @@ class Token {
         Token(TokenType type, int lineno, int col, std::string text)
             : _type(type), _lineno(lineno), _col(col), _text(text)
         {
-            //_logger.setLevel(DEBUG);
-            CLOG_DEBUG("Generate a new token[%s] at [%d|%d]\n", toString().c_str(), _lineno, _col);
+            LOG(DEBUG) << "Generate a new token[" << toString() << "] at [" << _lineno << "|" << _col << "]" << std::endl;
         }
         Token(TokenType type, int lineno, int col, char c)
             : _type(type), _lineno(lineno), _col(col), _text(1, c)
         {
-            //_logger.setLevel(DEBUG);
-            CLOG_DEBUG("Generate a new token[%s] at [%d|%d]\n", toString().c_str(), _lineno, _col);
+            LOG(DEBUG) << "Generate a new token[" << toString() << "] at [" << _lineno << "|" << _col << "]" << std::endl;
         }
 
         Token(const Token& t)
@@ -64,9 +62,6 @@ class Token {
         int _lineno;
         int _col;
         std::string _text;
-
-    CLASS_MAKE_LOGGER
-
 };
 
 
