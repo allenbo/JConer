@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
     arr_value->append(obj_value);
     
     arr_value->printout();
-    dumpFile(arr_value, "myjson", DUMP_PRETTY_PRINT);
+    dumpFile(arr_value, "myjson", DUMP_COMPACT_PRINT);
     char* str = NULL;
     dumps(arr_value, &str);
     std::cout << str << std::endl;

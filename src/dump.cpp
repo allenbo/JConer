@@ -11,6 +11,7 @@ static void dumpInner(JValue* value, std::ostream& out, int flag, int indent) {
     bool pretty_print = flag & DUMP_PRETTY_PRINT;
     bool sort_key = flag & DUMP_SORT_KEY;
     bool ensure_ascii = flag & DUMP_ENSURE_ASCII;
+    bool compact_print = flag & DUMP_COMPACT_PRINT;
     
     switch(value->type()) {
         case VT_INTEGER:
@@ -46,25 +47,34 @@ static void dumpInner(JValue* value, std::ostream& out, int flag, int indent) {
             out << "{";
             
             for (size_t i = 0; i < keys.size(); i ++ ) {
-                if (pretty_print) {
-                    out << std::endl;
-                    std::string indent_string(indent, ' ');
-                    out << indent_string;
+                if (! compact_print) {
+                    if (pretty_print) {
+                        out << std::endl;
+                        std::string indent_string(indent, ' ');
+                        out << indent_string;
+                    }
+                    else out << " ";
                 }
-                else out << " ";
 
-                out << "\"" << keys[i] << "\": ";
+                out << "\"" << keys[i] << "\"";
+                if (compact_print) {
+                  out << ":";
+                } else {
+                  out << " : ";
+                }
                 dumpInner(ovalue->get(keys[i]), out, flag, indent + DUMP_INDENT);
                 if (i != keys.size() - 1) {
                     out << ",";
                 }
             }
-            if (pretty_print) {
-                out << std::endl;
-                std::string indent_string(indent - DUMP_INDENT, ' ');
-                out << indent_string;
+            if (! compact_print) {
+                if (pretty_print) {
+                    out << std::endl;
+                    std::string indent_string(indent - DUMP_INDENT, ' ');
+                    out << indent_string;
+                }
+                else out << " ";
             }
-            else out << " ";
             
             out << "}";
             }
@@ -74,23 +84,27 @@ static void dumpInner(JValue* value, std::ostream& out, int flag, int indent) {
             JArray* avalue = (JArray*) value;
             out << "[";
             for (int i = 0; i < avalue->size(); i ++ ) {
-                if (pretty_print) {
-                    out << std::endl;
-                    std::string indent_string(indent, ' ');
-                    out << indent_string;
-                } else out << " ";
+                if (!compact_print) {
+                    if (pretty_print) {
+                        out << std::endl;
+                        std::string indent_string(indent, ' ');
+                        out << indent_string;
+                    } else out << " ";
+                }
 
                 dumpInner(avalue->get(i), out, flag, indent + DUMP_INDENT);
                 if (i != avalue->size() - 1) {
                     out  << ",";
                 }
             }
-            if (pretty_print) {
-                out << std::endl;
-                std::string indent_string(indent - DUMP_INDENT, ' ');
-                out << indent_string;
+            if (!compact_print) {
+                if (pretty_print) {
+                    out << std::endl;
+                    std::string indent_string(indent - DUMP_INDENT, ' ');
+                    out << indent_string;
+                }
+                else out << " ";
             }
-            else out << " ";
             
             out << "]";
             }
